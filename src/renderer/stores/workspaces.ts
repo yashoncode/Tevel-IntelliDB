@@ -516,12 +516,13 @@ export const useWorkspacesStore = defineStore('workspaces', {
             : workspace);
       },
       _addTab ({ uid, tab, content, type, autorun, schema, database, elementName, elementType, filePath }: WorkspaceTab) {
-         if (type === 'query')
+         const indexed = type === 'query' || type === 'ai-query';
+         if (indexed)
             tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
 
          const newTab: WorkspaceTab = {
             uid: tab,
-            index: type === 'query' ? tabIndex[uid] : null,
+            index: indexed ? tabIndex[uid] : null,
             selected: false,
             type,
             database,

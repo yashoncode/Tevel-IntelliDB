@@ -1,10 +1,10 @@
 {
   "name": "tevel-intellidb",
   "productName": "Tevel IntelliDB",
-  "version": "0.7.36",
+  "version": "1.15.0",
   "description": "An AI-first SQL client that reasons over database metadata to turn natural language into safe, reviewable SQL.",
   "license": "MIT",
-  "repository": "https://github.com/antares-sql/antares.git",
+  "repository": "https://github.com/yashoncode/tevel-intellidb.git",
   "scripts": {
     "debug": "npm run rebuild:electron && npm run debug-runner",
     "debug-runner": "node scripts/devRunner.js --remote-debug",
@@ -29,13 +29,13 @@
     "contributors:generate": "all-contributors generate",
     "prepare": "husky"
   },
-  "author": "Fabio Di Stasio <info@fabiodistasio.it>",
+  "author": "Yashwanth <yashwanth.devadoss@gmail.com>",
   "main": "./dist/main.js",
   "antares": {
     "devtoolsId": "nhdogjmejiglipccpnnnanhbledajbpd"
   },
   "build": {
-    "appId": "com.fabio286.antares",
+    "appId": "com.tevel.intellidb",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "asar": true,
     "buildDependenciesFromSource": false,
@@ -99,12 +99,12 @@
       "artifactName": "${productName}-${version}-portable.exe"
     },
     "appx": {
-      "displayName": "Antares SQL",
+      "displayName": "Tevel IntelliDB",
       "backgroundColor": "transparent",
       "showNameOnTiles": true,
-      "identityName": "62514FabioDiStasio.AntaresSQLClient",
+      "identityName": "Tevel.IntelliDB",
       "publisher": "CN=1A2729ED-865C-41D2-9038-39AE2A63AA52",
-      "applicationId": "FabioDiStasio.AntaresSQLClient"
+      "applicationId": "Tevel.IntelliDB"
     },
     "dmg": {
       "contents": [

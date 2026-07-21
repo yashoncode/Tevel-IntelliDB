@@ -1,9 +1,9 @@
 /**
  * [TRANSLATION UPDATE HELPER]
- * - Open a terminal in antares folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
+ * - Open a terminal in Tevel IntelliDB folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
  * - The command will output which terms are missing or not translated from english.
- * - Open antares folder with your editor of choice.
- * - Go to antares/src/renderer/i18n/ and open the locale file you want to translate.
+ * - Open Tevel IntelliDB folder with your editor of choice.
+ * - Go to Tevel IntelliDB/src/renderer/i18n/ and open the locale file you want to translate.
  * - Add and translate missing terms and consider whether to translate untranslated terms.
  */
 
@@ -326,7 +326,7 @@ export const heIL = {
       updateAvailable: 'עדכון זמין',
       downloadingUpdate: 'מוריד עדכון',
       updateDownloaded: 'העדכון הורד',
-      restartToInstall: 'הפעל מחדש את Antares כדי להתקין',
+      restartToInstall: 'הפעל מחדש את Tevel IntelliDB כדי להתקין',
       includeBetaUpdates: 'כלול עדכוני בטא',
       notificationsTimeout: 'זמן התראות',
       openNewTab: 'פתח כרטיסייה חדשה',
@@ -386,9 +386,9 @@ export const heIL = {
       csvIncludeHeader: 'כלול כותרת',
       csvExportOptions: 'אפשרויות ייצוא CSV',
       exportData: 'ייצא נתונים',
-      exportDataExplanation: 'ייצא חיבורים שמורים ל-Antares. תתבקש להזין סיסמה להצפנת הקובץ המיוצא.',
+      exportDataExplanation: 'ייצא חיבורים שמורים ל-Tevel IntelliDB. תתבקש להזין סיסמה להצפנת הקובץ המיוצא.',
       importData: 'ייבא נתונים',
-      importDataExplanation: 'מייבא קובץ .antares המכיל חיבורים. תצטרך להזין את הסיסמה שהוגדרה בזמן הייצוא.',
+      importDataExplanation: 'מייבא קובץ .Tevel IntelliDB המכיל חיבורים. תצטרך להזין את הסיסמה שהוגדרה בזמן הייצוא.',
       includeConnectionPasswords: 'כלול סיסמאות חיבור',
       includeFolders: 'כלול תיקיות',
       encryptionPassword: 'סיסמת הצפנה',

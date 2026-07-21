@@ -1,9 +1,9 @@
 /**
  * [TRANSLATION UPDATE HELPER]
- * - Open a terminal in antares folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
+ * - Open a terminal in Tevel IntelliDB folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
  * - The command will output which terms are missing or not translated from english.
- * - Open antares folder with your editor of choice.
- * - Go to antares/src/renderer/i18n/ and open the locale file you want to translate.
+ * - Open Tevel IntelliDB folder with your editor of choice.
+ * - Go to Tevel IntelliDB/src/renderer/i18n/ and open the locale file you want to translate.
  * - Add and translate missing terms and consider whether to translate untranslated terms.
  */
 
@@ -331,7 +331,7 @@ export const esES = {
       updateAvailable: 'Actualización disponible',
       downloadingUpdate: 'Descargando actualización',
       updateDownloaded: 'Descargada actualización',
-      restartToInstall: 'Reiniciar Antares para instalar',
+      restartToInstall: 'Reiniciar Tevel IntelliDB para instalar',
       includeBetaUpdates: 'Incluir actualizaciones en fase beta',
       notificationsTimeout: 'Tiempo de espera',
       openNewTab: 'Abrir nueva pestaña',
@@ -391,9 +391,9 @@ export const esES = {
       csvIncludeHeader: 'Incluir cabecera',
       csvExportOptions: 'Opciones de exportación de CSV',
       exportData: 'Exportar datos',
-      exportDataExplanation: 'Exportar conexiones guardadas en Antares. Se le preguntará por una contraseña para encriptar el fichero exportado.',
+      exportDataExplanation: 'Exportar conexiones guardadas en Tevel IntelliDB. Se le preguntará por una contraseña para encriptar el fichero exportado.',
       importData: 'Importar datos',
-      importDataExplanation: 'Importará un fichero con extensión .antares que contiene conexiones. Necesitará la contraseña con la que se encriptó el mismo.',
+      importDataExplanation: 'Importará un fichero con extensión .Tevel IntelliDB que contiene conexiones. Necesitará la contraseña con la que se encriptó el mismo.',
       includeConnectionPasswords: 'Incluir contraseñas de conexión',
       includeFolders: 'Incluir carpetas',
       encryptionPassword: 'Contraseña de encriptado',

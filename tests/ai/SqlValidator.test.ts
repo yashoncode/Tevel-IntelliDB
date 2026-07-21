@@ -20,9 +20,8 @@ test('blocks data/schema mutations in read-only mode', () => {
       'TRUNCATE users',
       'ALTER TABLE users ADD c INT',
       'CALL do_something()'
-   ]) {
+   ])
       assert.strictEqual(validateSql(sql).valid, false, `should block: ${sql}`);
-   }
 });
 
 test('blocks writes hidden inside a CTE (WITH ... DELETE)', () => {
@@ -39,8 +38,8 @@ test('blocks EXPLAIN ANALYZE (it executes the query)', () => {
 });
 
 test('keywords inside comments/strings do not trigger false blocks', () => {
-   assert.ok(validateSql("SELECT 1 -- DROP TABLE users").valid);
-   assert.ok(validateSql("SELECT 'we will DELETE later' AS note").valid);
+   assert.ok(validateSql('SELECT 1 -- DROP TABLE users').valid);
+   assert.ok(validateSql('SELECT \'we will DELETE later\' AS note').valid);
    assert.ok(validateSql('SELECT * FROM t /* UPDATE hint */').valid);
 });
 
@@ -54,10 +53,10 @@ test('empty query is invalid', () => {
 });
 
 test('stripNoise removes comments and string bodies', () => {
-   assert.ok(!stripNoise("SELECT 'DROP' -- DELETE").includes('DROP'));
-   assert.ok(!stripNoise("SELECT 'DROP' -- DELETE").includes('DELETE'));
+   assert.ok(!stripNoise('SELECT \'DROP\' -- DELETE').includes('DROP'));
+   assert.ok(!stripNoise('SELECT \'DROP\' -- DELETE').includes('DELETE'));
 });
 
 test('splitStatements ignores semicolons inside strings', () => {
-   assert.deepStrictEqual(splitStatements("SELECT ';' ; SELECT 2"), ["SELECT ''", 'SELECT 2']);
+   assert.deepStrictEqual(splitStatements('SELECT \';\' ; SELECT 2'), ['SELECT \'\'', 'SELECT 2']);
 });

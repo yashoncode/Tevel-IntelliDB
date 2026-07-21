@@ -2,12 +2,13 @@ import assert from 'node:assert';
 import { test } from 'node:test';
 
 import type { AiTable } from '../../src/common/interfaces/ai';
-import type { AiProvider } from '../../src/main/libs/ai/providers/AiProvider';
 import { extractSql, runNlToSql } from '../../src/main/libs/ai/pipeline/NlToSqlPipeline';
+import type { AiProvider } from '../../src/main/libs/ai/providers/AiProvider';
 
 const TABLES = [{ schema: 's', name: 'customers', comment: 'people' }];
 const enrich = async (): Promise<AiTable[]> => [{
-   schema: 's', name: 'customers',
+   schema: 's',
+   name: 'customers',
    columns: [{ name: 'id', type: 'int', nullable: false, key: 'pri' }],
    foreignKeys: []
 }];

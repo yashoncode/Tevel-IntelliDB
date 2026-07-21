@@ -25,7 +25,7 @@ export function stripNoise (sql: string): string {
    return sql
       .replace(/--[^\n]*/g, ' ') // line comments
       .replace(/\/\*[\s\S]*?\*\//g, ' ') // block comments
-      .replace(/'(?:[^'\\]|\\.|'')*'/g, "''") // single-quoted strings
+      .replace(/'(?:[^'\\]|\\.|'')*'/g, '\'\'') // single-quoted strings
       .replace(/"(?:[^"\\]|\\.|"")*"/g, '""') // double-quoted identifiers/strings
       .replace(/`[^`]*`/g, '``'); // backtick identifiers
 }
@@ -70,9 +70,8 @@ export function validateSql (sql: string, writeMode = false): SqlValidationResul
          continue;
       }
       const forbidden = tokens.find(t => FORBIDDEN.has(t));
-      if (forbidden) {
+      if (forbidden)
          warnings.push(`Blocked: statement contains "${forbidden}", which can modify data or schema.`);
-      }
    }
 
    return { valid: warnings.length === 0, warnings };

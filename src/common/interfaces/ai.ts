@@ -74,6 +74,13 @@ export interface AiProviderConfig {
    enableThinking?: boolean;
    /** Token budget for the thinking stream when enableThinking is on. */
    reasoningBudget?: number;
+   /** Embedding model for semantic table retrieval (RAG). Empty disables embeddings. */
+   embedModel?: string;
+}
+
+export interface AiEmbedOptions {
+   /** NIM asymmetric embedders need to know if the text is a search query or a passage. */
+   inputType?: 'query' | 'passage';
 }
 
 export interface AiMessage {
@@ -113,6 +120,30 @@ export interface GenerateSqlParams {
    maxTables?: number;
    /** User-defined business vocabulary aliases (e.g. { cust: 'customer' }). */
    vocabulary?: Record<string, string>;
+   /** Blend semantic embeddings into table retrieval (hybrid RAG). */
+   useEmbeddings?: boolean;
+}
+
+/** Free-form question about the schema, answered in prose over retrieved metadata. */
+export interface AskSchemaParams {
+   uid: string;
+   schema: string;
+   question: string;
+   dialect: string;
+   tables: AiTableRef[];
+   provider: AiProviderConfig;
+   maxTables?: number;
+   vocabulary?: Record<string, string>;
+   useEmbeddings?: boolean;
+   /** Prior turns of this conversation (metadata-only context). */
+   history?: AiMessage[];
+}
+
+/** Structured result of a schema Q&A. */
+export interface AskSchemaResult {
+   answer: string;
+   /** Tables the intelligence layer selected as context. */
+   usedTables: string[];
 }
 
 export interface ChatParams {

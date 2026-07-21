@@ -72,9 +72,13 @@ test('ranker falls back to first N when nothing matches', () => {
 
 // --- SchemaSnapshot: the no-row-data boundary ---
 test('toAiColumn whitelists metadata and drops unexpected fields', () => {
-   const dirty = { name: 'email', type: 'varchar', nullable: false, key: 'uni',
+   const dirty = { name: 'email',
+      type: 'varchar',
+      nullable: false,
+      key: 'uni',
       // fields a leak might carry — must NOT survive:
-      sampleValue: 'alice@example.com', data: ['row1', 'row2'] } as never;
+      sampleValue: 'alice@example.com',
+      data: ['row1', 'row2'] } as never;
    const col = toAiColumn(dirty);
    assert.deepStrictEqual(Object.keys(col).sort(), ['comment', 'default', 'key', 'name', 'nullable', 'type']);
    assert.ok(!JSON.stringify(col).includes('alice'));

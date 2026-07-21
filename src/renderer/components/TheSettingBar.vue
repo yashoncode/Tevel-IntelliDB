@@ -62,13 +62,13 @@
                v-tooltip="{
                   strategy: 'fixed',
                   placement: 'right',
-                  content: 'Tevel AI Assistant'
+                  content: 'AI model settings'
                }"
                class="settingbar-element btn btn-link"
                @click="showAiAssistant()"
             >
                <BaseIcon
-                  icon-name="mdiRobotHappyOutline"
+                  icon-name="mdiCreation"
                   class="settingbar-element-icon text-light"
                   :size="24"
                />

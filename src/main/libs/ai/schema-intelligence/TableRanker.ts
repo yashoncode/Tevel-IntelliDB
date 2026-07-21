@@ -19,29 +19,27 @@ export interface RankedTable {
    score: number;
 }
 
+/** Stable identity for a table across ranking, embedding and caching. */
+export function tableKey (ref: AiTableRef): string {
+   return `${ref.schema}.${ref.name}`;
+}
+
 /** Extract meaningful lowercase terms from the user's question. */
 export function questionTerms (question: string): string[] {
    return (question.toLowerCase().match(/[a-z0-9]+/g) ?? [])
       .filter(w => w.length > 1 && !STOPWORDS.has(w));
 }
 
-/**
- * Rank tables by relevance to the question. Returns the top `limit`, highest first.
- * Ties keep original order (stable).
- */
-export function rankTables (
+/** Raw keyword score for EVERY table (unsorted, unfiltered) — the blend layer needs all of them. */
+export function scoreTables (
    question: string,
    tables: AiTableRef[],
-   vocabulary: Record<string, string> = {},
-   limit = 12
+   vocabulary: Record<string, string> = {}
 ): RankedTable[] {
-   const qTerms = questionTerms(question);
-   if (qTerms.length === 0) {
-      return tables.slice(0, limit).map(ref => ({ ref, score: 0 }));
-   }
-   const qSet = new Set(qTerms);
+   const qSet = new Set(questionTerms(question));
+   if (qSet.size === 0) return tables.map(ref => ({ ref, score: 0 }));
 
-   const scored: RankedTable[] = tables.map((ref, index) => {
+   return tables.map(ref => {
       const nameTerms = expandTerms(ref.name, vocabulary);
       const commentTerms = ref.comment
          ? new Set((ref.comment.toLowerCase().match(/[a-z0-9]+/g) ?? []))
@@ -54,7 +52,9 @@ export function rankTables (
          else {
             // partial / plural tolerance (customer ~ customers)
             for (const n of nameTerms) {
-               if (n.length > 3 && (n.startsWith(q) || q.startsWith(n))) { score += 1; break; }
+               if (n.length > 3 && (n.startsWith(q) || q.startsWith(n))) {
+                  score += 1; break;
+               }
             }
          }
       }
@@ -62,9 +62,23 @@ export function rankTables (
       const human = humanizeName(ref.name, vocabulary);
       if (human && question.toLowerCase().includes(human)) score += 2;
 
-      return { ref, score, index };
-   })
-      .sort((a, b) => (b.score - a.score) || ((a as { index: number }).index - (b as { index: number }).index))
+      return { ref, score };
+   });
+}
+
+/**
+ * Rank tables by relevance to the question. Returns the top `limit`, highest first.
+ * Ties keep original order (stable).
+ */
+export function rankTables (
+   question: string,
+   tables: AiTableRef[],
+   vocabulary: Record<string, string> = {},
+   limit = 12
+): RankedTable[] {
+   const scored = scoreTables(question, tables, vocabulary)
+      .map((s, index) => ({ ...s, index }))
+      .sort((a, b) => (b.score - a.score) || (a.index - b.index))
       .map(({ ref, score }) => ({ ref, score }));
 
    const hits = scored.filter(s => s.score > 0);

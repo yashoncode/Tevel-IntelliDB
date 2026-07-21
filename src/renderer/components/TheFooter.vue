@@ -51,18 +51,10 @@
                />
                <small>{{ t('application.console') }}</small>
             </li>
-            <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
-               <BaseIcon
-                  icon-name="mdiCoffee"
-                  class="mr-1"
-                  :size="18"
-               />
-               <small>{{ t('general.donate') }}</small>
-            </li>
             <li
                class="footer-element footer-link"
                :title="t('application.reportABug')"
-               @click="openOutside('https://github.com/antares-sql/antares/issues')"
+               @click="openOutside('https://github.com/yashoncode/tevel-intellidb/issues')"
             >
                <BaseIcon icon-name="mdiBug" :size="18" />
             </li>

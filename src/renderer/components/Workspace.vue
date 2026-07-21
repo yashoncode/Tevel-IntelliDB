@@ -58,6 +58,26 @@
                      </a>
 
                      <a
+                        v-else-if="element.type === 'ai-query'"
+                        class="tab-link"
+                     >
+                        <BaseIcon
+                           class="mt-1 mr-1"
+                           icon-name="mdiCreation"
+                           :size="18"
+                        />
+                        <span>
+                           <span>AI Query #{{ element.index }}</span>
+                           <span
+                              class="btn btn-clear"
+                              :title="t('general.close')"
+                              @mousedown.left.stop
+                              @click.stop="closeTab(element)"
+                           />
+                        </span>
+                     </a>
+
+                     <a
                         v-else-if="element.type === 'temp-data'"
                         class="tab-link"
                         @dblclick="openAsPermanentTab(element)"
@@ -435,14 +455,36 @@
                   </li>
                </template>
                <template #footer>
-                  <li class="tab-item">
+                  <li class="tab-item dropdown tab-add-dropdown">
                      <a
-                        class="tab-add"
+                        class="tab-add dropdown-toggle"
+                        tabindex="0"
                         :title="t('application.openNewTab')"
-                        @click="addQueryTab"
                      >
                         <BaseIcon icon-name="mdiPlus" :size="24" />
                      </a>
+                     <ul class="menu text-left">
+                        <li class="menu-item">
+                           <a class="c-hand p-vcentered" @click="addQueryTab">
+                              <BaseIcon
+                                 icon-name="mdiCodeTags"
+                                 :size="18"
+                                 class="mr-1"
+                              />
+                              <span>Query Editor</span>
+                           </a>
+                        </li>
+                        <li class="menu-item">
+                           <a class="c-hand p-vcentered" @click="addAiQueryTab">
+                              <BaseIcon
+                                 icon-name="mdiCreation"
+                                 :size="18"
+                                 class="mr-1"
+                              />
+                              <span>AI Query</span>
+                           </a>
+                        </li>
+                     </ul>
                   </li>
                </template>
             </Draggable>
@@ -450,6 +492,13 @@
             <template v-for="tab of draggableTabs" :key="tab.uid">
                <WorkspaceTabQuery
                   v-if="tab.type ==='query'"
+                  :tab-uid="tab.uid"
+                  :tab="tab"
+                  :is-selected="selectedTab === tab.uid && isSelected"
+                  :connection="connection"
+               />
+               <WorkspaceTabAiQuery
+                  v-else-if="tab.type === 'ai-query'"
                   :tab-uid="tab.uid"
                   :tab="tab"
                   :is-selected="selectedTab === tab.uid && isSelected"
@@ -634,6 +683,7 @@ import ModalProcessesList from '@/components/ModalProcessesList.vue';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState.vue';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar.vue';
+import WorkspaceTabAiQuery from '@/components/WorkspaceTabAiQuery.vue';
 import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction.vue';
 import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine.vue';
 import WorkspaceTabNewScheduler from '@/components/WorkspaceTabNewScheduler.vue';
@@ -700,7 +750,7 @@ const workspace = computed(() => getWorkspace(props.connection.uid));
 const draggableTabs = computed<WorkspaceTab[]>({
    get () {
       if (workspace.value.customizations.database)
-         return workspace.value.tabs.filter(tab => tab.type === 'query' || tab.database === workspace.value.database);
+         return workspace.value.tabs.filter(tab => tab.type === 'query' || tab.type === 'ai-query' || tab.database === workspace.value.database);
       else
          return workspace.value.tabs;
    },
@@ -741,6 +791,10 @@ watch(queryTabs, (newVal, oldVal) => {
 
 const addQueryTab = () => {
    newTab({ uid: props.connection.uid, type: 'query', schema: workspace.value.breadcrumbs.schema });
+};
+
+const addAiQueryTab = () => {
+   newTab({ uid: props.connection.uid, type: 'ai-query', schema: workspace.value.breadcrumbs.schema });
 };
 
 const getSelectedTab = () => {
@@ -991,6 +1045,34 @@ onMounted(() => {
 
         &.tools-dropdown + .tab-item {
           margin-left: 56px;
+        }
+
+        &.tab-add-dropdown {
+          position: relative;
+
+          .tab-add:focus {
+            opacity: 1;
+            outline: 0;
+            box-shadow: none;
+          }
+
+          .menu {
+            right: 0;
+            left: auto;
+            min-width: 160px;
+            z-index: 9;
+
+            .menu-item a {
+              display: flex;
+              align-items: center;
+              color: inherit;
+              border-radius: $border-radius;
+              padding: 0.2rem 0.4rem;
+              text-decoration: none;
+              white-space: nowrap;
+              border: 0;
+            }
+          }
         }
 
         .workspace-tools-link {

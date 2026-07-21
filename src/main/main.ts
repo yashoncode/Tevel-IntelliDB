@@ -34,7 +34,7 @@ async function createMainWindow () {
       minWidth: 900,
       minHeight: 550,
       show: !isWindows,
-      title: 'Antares SQL',
+      title: 'Tevel IntelliDB',
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,

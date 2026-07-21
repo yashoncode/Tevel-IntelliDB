@@ -23,9 +23,9 @@ export function extractSql (response: string): { sql: string; explanation: strin
       return { sql, explanation };
    }
    // No code fence: if it smells like SQL, treat the whole thing as SQL.
-   if (/^\s*(select|with|explain|show|describe|insert|update|delete|create)\b/i.test(response)) {
+   if (/^\s*(select|with|explain|show|describe|insert|update|delete|create)\b/i.test(response))
       return { sql: response.trim(), explanation: '' };
-   }
+
    return { sql: '', explanation: response.trim() };
 }
 
@@ -42,6 +42,8 @@ export interface PipelineInput {
    writeMode?: boolean;
    maxTables?: number;
    vocabulary?: Record<string, string>;
+   /** Pre-ranked table refs (e.g. from hybrid RAG). Skips the internal keyword ranker. */
+   rankedRefs?: AiTableRef[];
 }
 
 export async function runNlToSql (input: PipelineInput, deps: PipelineDeps): Promise<GenerateSqlResult> {
@@ -49,8 +51,9 @@ export async function runNlToSql (input: PipelineInput, deps: PipelineDeps): Pro
    const writeMode = !!input.writeMode;
    const vocabulary = input.vocabulary ?? {};
 
-   const ranked = rankTables(input.question, input.tables, vocabulary, input.maxTables ?? 12);
-   const enriched = await enrich(ranked.map(r => r.ref));
+   const rankedRefs = input.rankedRefs ??
+      rankTables(input.question, input.tables, vocabulary, input.maxTables ?? 12).map(r => r.ref);
+   const enriched = await enrich(rankedRefs);
    const usedTables = enriched.map(t => t.name);
 
    const messages = buildSqlPrompt(input.question, enriched, {

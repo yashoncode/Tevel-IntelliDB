@@ -201,7 +201,7 @@ export const deDE = {
       updateAvailable: 'Aktualisierung verfügbar',
       downloadingUpdate: 'Aktualisierung wird heruntergeladen',
       updateDownloaded: 'Aktualisierung heruntergeladen',
-      restartToInstall: 'Starte Antares neu für die Installation',
+      restartToInstall: 'Starte Tevel IntelliDB neu für die Installation',
       notificationsTimeout: 'Timeout für Benachrichtigungen',
       openNewTab: 'Öffne einen neuen Tab',
       unsavedChanges: 'Ungespeicherte Änderungen',

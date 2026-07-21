@@ -42,42 +42,69 @@ Rules:
 const READONLY_RULE = '- Generate READ-ONLY queries (SELECT/WITH/EXPLAIN/SHOW/DESCRIBE) only. Never INSERT/UPDATE/DELETE/DROP/ALTER/TRUNCATE.';
 const WRITE_RULE = '- Write mode is ENABLED: data-modifying statements are permitted, but be conservative and add WHERE clauses.';
 
+const SCHEMA_ANSWER_SYSTEM = `You are Tevel IntelliDB, a senior database engineer. Answer the user's question about their database using ONLY the schema metadata provided below (METADATA ONLY — never row data).
+
+Rules:
+- Be concise and specific: reference real table/column names, types, keys and the foreign-key relationships shown.
+- If the answer is not derivable from the provided schema, say so plainly.
+- Format with markdown. Do NOT write a SQL query unless the user explicitly asks for one.`;
+
+/** Render the token-budgeted schema context shared by SQL and schema-answer prompts. */
+export function renderSchemaBlock (
+   tables: AiTable[],
+   vocabulary: Record<string, string> = {},
+   tokenBudget = 6000
+): string {
+   const maxChars = tokenBudget * CHARS_PER_TOKEN;
+   const parts: string[] = [];
+   let used = 0;
+   let dropped = 0;
+   for (const table of tables) {
+      const desc = describeTable(table, vocabulary);
+      if (used + desc.length > maxChars && parts.length > 0) {
+         dropped++; continue;
+      }
+      parts.push(desc);
+      used += desc.length;
+   }
+   const schemaBlock = parts.length
+      ? `Schema (relevant tables):\n\n${parts.join('\n\n')}`
+      : 'No schema tables were retrieved; ask the user to select a database.';
+   const noticeBlock = dropped > 0
+      ? `\n\n(Note: ${dropped} lower-ranked table(s) were omitted to fit the context budget.)`
+      : '';
+   return `${schemaBlock}${noticeBlock}`;
+}
+
 /** Build the chat messages for NL -> SQL. Tables are included until the token budget is hit. */
 export function buildSqlPrompt (
    question: string,
    tables: AiTable[],
    opts: BuildPromptOptions
 ): AiMessage[] {
-   const budget = opts.tokenBudget ?? 6000;
-   const maxChars = budget * CHARS_PER_TOKEN;
-
-   const parts: string[] = [];
-   let used = 0;
-   let dropped = 0;
-   for (const table of tables) {
-      const desc = describeTable(table, opts.vocabulary);
-      if (used + desc.length > maxChars && parts.length > 0) { dropped++; continue; }
-      parts.push(desc);
-      used += desc.length;
-   }
-
    const system = [
       SYSTEM_BASE,
       opts.writeMode ? WRITE_RULE : READONLY_RULE,
       `- SQL dialect: ${opts.dialect}.`
    ].join('\n');
 
-   const schemaBlock = parts.length
-      ? `Schema (relevant tables):\n\n${parts.join('\n\n')}`
-      : 'No schema tables were retrieved; ask the user to select a database.';
-
-   const noticeBlock = dropped > 0
-      ? `\n\n(Note: ${dropped} lower-ranked table(s) were omitted to fit the context budget.)`
-      : '';
-
    return [
       { role: 'system', content: system },
-      { role: 'user', content: `${schemaBlock}${noticeBlock}\n\nQuestion: ${question}` }
+      { role: 'user', content: `${renderSchemaBlock(tables, opts.vocabulary, opts.tokenBudget)}\n\nQuestion: ${question}` }
+   ];
+}
+
+/** Build the chat messages for a prose schema Q&A over the same retrieved metadata. */
+export function buildSchemaAnswerPrompt (
+   question: string,
+   tables: AiTable[],
+   opts: { dialect: string; vocabulary?: Record<string, string>; tokenBudget?: number; history?: AiMessage[] }
+): AiMessage[] {
+   const system = `${SCHEMA_ANSWER_SYSTEM}\n- SQL dialect: ${opts.dialect}.`;
+   return [
+      { role: 'system', content: system },
+      ...(opts.history ?? []),
+      { role: 'user', content: `${renderSchemaBlock(tables, opts.vocabulary, opts.tokenBudget)}\n\nQuestion: ${question}` }
    ];
 }
 

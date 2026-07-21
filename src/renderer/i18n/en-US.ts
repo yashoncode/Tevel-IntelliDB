@@ -1,9 +1,9 @@
 /**
  * [TRANSLATION UPDATE HELPER]
- * - Open a terminal in antares folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
+ * - Open a terminal in Tevel IntelliDB folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
  * - The command will output which terms are missing or not translated from english.
- * - Open antares folder with your editor of choice.
- * - Go to antares/src/renderer/i18n/ and open the locale file you want to translate.
+ * - Open Tevel IntelliDB folder with your editor of choice.
+ * - Go to Tevel IntelliDB/src/renderer/i18n/ and open the locale file you want to translate.
  * - Add and translate missing terms and consider whether to translate untranslated terms.
  */
 
@@ -331,7 +331,7 @@ export const enUS = {
       updateAvailable: 'Update available',
       downloadingUpdate: 'Downloading update',
       updateDownloaded: 'Update downloaded',
-      restartToInstall: 'Restart Antares to install',
+      restartToInstall: 'Restart Tevel IntelliDB to install',
       includeBetaUpdates: 'Include beta updates',
       notificationsTimeout: 'Notifications timeout',
       openNewTab: 'Open a new tab',
@@ -391,9 +391,9 @@ export const enUS = {
       csvIncludeHeader: 'Include header',
       csvExportOptions: 'CSV export options',
       exportData: 'Export data',
-      exportDataExplanation: 'Export saved connections to Antares. You will be asked for a password to encrypt the exported file.',
+      exportDataExplanation: 'Export saved connections to Tevel IntelliDB. You will be asked for a password to encrypt the exported file.',
       importData: 'Import data',
-      importDataExplanation: 'Imports an .antares file containing connections. You will need to enter the password defined during export.',
+      importDataExplanation: 'Imports an .Tevel IntelliDB file containing connections. You will need to enter the password defined during export.',
       includeConnectionPasswords: 'Include connection passwords',
       includeFolders: 'Include folders',
       encryptionPassword: 'Encryption password',

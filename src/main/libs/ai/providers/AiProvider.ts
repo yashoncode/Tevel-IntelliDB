@@ -1,11 +1,15 @@
 // Tevel IntelliDB — provider abstraction.
 
-import type { AiChatOptions, AiMessage, AiProviderConfig } from 'common/interfaces/ai';
+import type {
+   AiChatOptions, AiEmbedOptions, AiMessage, AiProviderConfig
+} from 'common/interfaces/ai';
 
 import { OpenAiCompatibleProvider } from './OpenAiCompatibleProvider';
 
 export interface AiProvider {
    chat (messages: AiMessage[], options?: AiChatOptions): Promise<string>;
+   /** Embed texts for semantic retrieval. Optional — not every provider supports it. */
+   embed? (texts: string[], options?: AiEmbedOptions): Promise<number[][]>;
 }
 
 /**

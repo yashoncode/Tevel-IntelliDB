@@ -1,10 +1,10 @@
 
 /**
  * [TRANSLATION UPDATE HELPER]
- * - Open a terminal in antares folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
+ * - Open a terminal in Tevel IntelliDB folder and run `npm run translation:check short-code` replacing short-code with the one you are updating.
  * - The command will output which terms are missing or not translated from english.
- * - Open antares folder with your editor of choice.
- * - Go to antares/src/renderer/i18n/ and open the locale file you want to translate.
+ * - Open Tevel IntelliDB folder with your editor of choice.
+ * - Go to Tevel IntelliDB/src/renderer/i18n/ and open the locale file you want to translate.
  * - Add and translate missing terms and consider whether to translate untranslated terms.
  */
 
@@ -327,7 +327,7 @@ export const csCZ = {
       updateAvailable: 'Dostupná aktualizace',
       downloadingUpdate: 'Stahuji aktualizaci',
       updateDownloaded: 'Aktualizace stažena',
-      restartToInstall: 'Pro instalaci restartujte Antares',
+      restartToInstall: 'Pro instalaci restartujte Tevel IntelliDB',
       includeBetaUpdates: 'Včetně beta aktualizací',
       notificationsTimeout: 'Časový limit pro oznámení',
       openNewTab: 'Otevřít novou kartu',
@@ -387,9 +387,9 @@ export const csCZ = {
       csvIncludeHeader: 'Včetně hlavičky',
       csvExportOptions: 'Možnosti CSV exportu',
       exportData: 'Exportovat data',
-      exportDataExplanation: 'Export uložených připojení v Antaresu. Budete požádáni o zadání hesla pro zašifrování exportovaného souboru.',
+      exportDataExplanation: 'Export uložených připojení v Tevel IntelliDBu. Budete požádáni o zadání hesla pro zašifrování exportovaného souboru.',
       importData: 'Importovat data',
-      importDataExplanation: 'Importuje soubor .antares obsahující připojení. Je třeba zadat heslo definované při exportu.',
+      importDataExplanation: 'Importuje soubor .Tevel IntelliDB obsahující připojení. Je třeba zadat heslo definované při exportu.',
       includeConnectionPasswords: 'Včetně hesel připojení',
       includeFolders: 'Včetně složek',
       encryptionPassword: 'Heslo pro zašifrování souboru',

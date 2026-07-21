@@ -1,5 +1,5 @@
 import {
-   ChatParams, ExplainSqlParams, GenerateSqlParams, GenerateSqlResult
+   AskSchemaParams, AskSchemaResult, ChatParams, ExplainSqlParams, GenerateSqlParams, GenerateSqlResult
 } from 'common/interfaces/ai';
 import { IpcResponse } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
@@ -13,6 +13,10 @@ export default class {
 
    static generateSql (params: GenerateSqlParams): Promise<IpcResponse<GenerateSqlResult>> {
       return ipcRenderer.invoke('ai:generate-sql', unproxify(params));
+   }
+
+   static askSchema (params: AskSchemaParams): Promise<IpcResponse<AskSchemaResult>> {
+      return ipcRenderer.invoke('ai:ask-schema', unproxify(params));
    }
 
    static chat (params: ChatParams): Promise<IpcResponse<string>> {

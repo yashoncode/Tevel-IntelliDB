@@ -103,7 +103,7 @@
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
                                     <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
                                        {{ t('application.missingOrIncompleteTranslation') }}<br>
-                                       <a class="text-bold c-hand" @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')">{{ t('application.findOutHowToContribute') }}</a>
+                                       <a class="text-bold c-hand" @click="openOutside('https://github.com/yashoncode/tevel-intellidb')">{{ t('application.findOutHowToContribute') }}</a>
                                     </small>
                                  </div>
                               </div>
@@ -392,40 +392,27 @@
                         <h4>{{ appName }}</h4>
                         <p class="mb-2">
                            {{ t('general.version') }} {{ appVersion }}<br>
-                           <a
-                              class="c-hand"
-                              :style="'align-items: center; display: inline-flex;'"
-                              @click="openOutside('https://github.com/antares-sql/antares')"
-                           ><BaseIcon
-                              icon-name="mdiGithub"
-                              class="d-inline mr-1"
-                              :size="16"
-                           /> GitHub</a> • <a
-                              class="c-hand"
-                              :style="'align-items: center; display: inline-flex;'"
-                              @click="openOutside('https://fosstodon.org/@AntaresSQL')"
-                           ><BaseIcon
-                              icon-name="mdiMastodon"
-                              class="d-inline mr-1"
-                              :size="16"
-                           /> Mastodon</a> • <a
-                              class="c-hand"
-                              :style="'align-items: center; display: inline-flex;'"
-                              @click="openOutside('https://antares-sql.app/')"
-                           ><BaseIcon
-                              icon-name="mdiWeb"
-                              class="d-inline mr-1"
-                              :size="16"
-                           /> Website</a><br>
-                           <small>{{ t('general.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
+                           <span class="d-block mt-2">
+                              <a
+                                 class="c-hand"
+                                 :style="'align-items: center; display: inline-flex;'"
+                                 @click="openOutside('https://github.com/yashoncode/tevel-intellidb')"
+                              ><BaseIcon
+                                 icon-name="mdiGithub"
+                                 class="d-inline mr-1"
+                                 :size="16"
+                              /> GitHub</a> • <a
+                                 class="c-hand"
+                                 :style="'align-items: center; display: inline-flex;'"
+                                 @click="openOutside('https://yashwynth.vercel.app')"
+                              ><BaseIcon
+                                 icon-name="mdiWeb"
+                                 class="d-inline mr-1"
+                                 :size="16"
+                              /> Website</a>
+                           </span>
+                           <small class="d-block mt-2">{{ t('general.author') }} {{ appAuthor }}</small>
                         </p>
-                        <div class="mb-2">
-                           <small class="d-block text-uppercase">{{ t('general.contributors') }}:</small>
-                           <div class="d-block py-1">
-                              <small v-for="(contributor, i) in otherContributors" :key="i">{{ i !== 0 ? ', ' : '' }}{{ contributor }}</small>
-                           </div>
-                           <small>{{ t('application.madeWithJS') }}</small>
-                        </div>
                      </div>
                   </div>
                </div>
@@ -507,9 +494,8 @@ const {
 } = applicationStore;
 const { getWorkspace } = workspacesStore;
 
-const appAuthor = 'Fabio Di Stasio';
+const appAuthor = 'Yashwanth';
 const pageSizes = [30, 40, 100, 250, 500, 1000];
-const contributors = process.env.APP_CONTRIBUTORS;
 const appLogo = require('../images/logo.svg');
 const darkPreview = require('../images/dark.png');
 const lightPreview = require('../images/light.png');
@@ -606,13 +592,6 @@ const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'li
 
 const workspace = computed(() => {
    return getWorkspace(selectedWorkspace.value);
-});
-
-const otherContributors = computed(() => {
-   return contributors
-      .split(',')
-      .filter(c => !c.includes(appAuthor))
-      .sort((a, b) => a.toLowerCase().trim().localeCompare(b.toLowerCase()));
 });
 
 const selectTab = (tab: string) => {
