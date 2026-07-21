@@ -1,8 +1,8 @@
 {
-  "name": "antares",
-  "productName": "Antares",
+  "name": "tevel-intellidb",
+  "productName": "Tevel IntelliDB",
   "version": "0.7.35",
-  "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
+  "description": "An AI-first SQL client that reasons over database metadata to turn natural language into safe, reviewable SQL.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
   "scripts": {
