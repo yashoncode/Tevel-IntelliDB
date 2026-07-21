@@ -7,4 +7,5 @@ node_modules
 thumbs.db
 NOTES.md
 *.txt
-*.heapsnapshotdist-test/
+*.heapsnapshot
+dist-test/

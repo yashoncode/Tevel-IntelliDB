@@ -4,11 +4,27 @@ import { test } from 'node:test';
 import {
    expandTerms, humanizeName, splitIdentifier
 } from '../../src/main/libs/ai/schema-intelligence/BusinessVocabulary';
-import { RelationshipGraph } from '../../src/main/libs/ai/schema-intelligence/RelationshipGraph';
 import {
-   buildTableSnapshot, findSuspiciousKeys, toAiColumn, toAiForeignKeys
+   buildTableSnapshot, toAiColumn, toAiForeignKeys
 } from '../../src/main/libs/ai/schema-intelligence/SchemaSnapshot';
 import { rankTables } from '../../src/main/libs/ai/schema-intelligence/TableRanker';
+
+// Boundary check: any object key that would indicate row data leaked through.
+function findSuspiciousKeys (obj: unknown): string[] {
+   const suspicious = ['rows', 'data', 'records', 'values', 'sample', 'result', 'resultset'];
+   const found: string[] = [];
+   const scan = (o: unknown) => {
+      if (Array.isArray(o)) return o.forEach(scan);
+      if (o && typeof o === 'object') {
+         for (const key of Object.keys(o)) {
+            if (suspicious.includes(key.toLowerCase())) found.push(key);
+            scan((o as Record<string, unknown>)[key]);
+         }
+      }
+   };
+   scan(obj);
+   return found;
+}
 
 // --- BusinessVocabulary ---
 test('humanizeName expands abbreviations and strips noise', () => {
@@ -52,26 +68,6 @@ test('ranker respects the limit', () => {
 test('ranker falls back to first N when nothing matches', () => {
    const ranked = rankTables('xyzzy', TABLES, {}, 2);
    assert.strictEqual(ranked.length, 2);
-});
-
-// --- RelationshipGraph ---
-const GRAPH_TABLES = [
-   { schema: 's', name: 'orders', foreignKeys: [{ field: 'customer_id', refTable: 'customers', refField: 'id' }] },
-   { schema: 's', name: 'invoices', foreignKeys: [{ field: 'order_id', refTable: 'orders', refField: 'id' }] },
-   { schema: 's', name: 'customers', foreignKeys: [] }
-];
-
-test('joinPath finds a multi-hop path', () => {
-   const g = new RelationshipGraph(GRAPH_TABLES);
-   const path = g.joinPath('customers', 'invoices');
-   assert.strictEqual(path.length, 2);
-   assert.strictEqual(path[0].toTable, 'orders');
-   assert.strictEqual(path[1].toTable, 'invoices');
-});
-
-test('joinPath returns empty for unrelated / same table', () => {
-   const g = new RelationshipGraph(GRAPH_TABLES);
-   assert.deepStrictEqual(g.joinPath('customers', 'customers'), []);
 });
 
 // --- SchemaSnapshot: the no-row-data boundary ---

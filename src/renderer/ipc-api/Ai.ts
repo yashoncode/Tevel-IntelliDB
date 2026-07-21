@@ -22,8 +22,4 @@ export default class {
    static explainSql (params: ExplainSqlParams): Promise<IpcResponse<string>> {
       return ipcRenderer.invoke('ai:explain-sql', unproxify(params));
    }
-
-   static validateSql (params: { sql: string; writeMode?: boolean }): Promise<IpcResponse<{ valid: boolean; warnings: string[] }>> {
-      return ipcRenderer.invoke('ai:validate-sql', unproxify(params));
-   }
 }

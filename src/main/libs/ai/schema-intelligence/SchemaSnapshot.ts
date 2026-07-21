@@ -47,23 +47,3 @@ export function buildTableSnapshot (
       foreignKeys: toAiForeignKeys(keyUsage)
    };
 }
-
-/**
- * Test/debug guard: returns keys that look like row data. The whitelist above makes
- * this always empty for AiTable, but we assert it in tests to lock the boundary.
- */
-export function findSuspiciousKeys (obj: unknown): string[] {
-   const suspicious = ['rows', 'data', 'records', 'values', 'sample', 'result', 'resultset'];
-   const found: string[] = [];
-   const scan = (o: unknown) => {
-      if (Array.isArray(o)) return o.forEach(scan);
-      if (o && typeof o === 'object') {
-         for (const key of Object.keys(o)) {
-            if (suspicious.includes(key.toLowerCase())) found.push(key);
-            scan((o as Record<string, unknown>)[key]);
-         }
-      }
-   };
-   scan(obj);
-   return found;
-}

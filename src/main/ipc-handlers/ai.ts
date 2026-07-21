@@ -7,7 +7,6 @@ import { ipcMain } from 'electron';
 import { createProvider } from '../libs/ai/providers/AiProvider';
 import { buildTableSnapshot } from '../libs/ai/schema-intelligence/SchemaSnapshot';
 import { runNlToSql } from '../libs/ai/pipeline/NlToSqlPipeline';
-import { validateSql } from '../libs/ai/sql/SqlValidator';
 import { validateSender } from '../libs/misc/validateSender';
 
 export default (connections: Record<string, antares.Client>) => {
@@ -98,11 +97,5 @@ export default (connections: Record<string, antares.Client>) => {
       catch (err) {
          return { status: 'error', response: (err as Error).toString() };
       }
-   });
-
-   // Expose validation to the renderer so the UI can gate the Execute button too.
-   ipcMain.handle('ai:validate-sql', async (event, params: { sql: string; writeMode?: boolean }) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-      return { status: 'success', response: validateSql(params.sql, params.writeMode) };
    });
 };
