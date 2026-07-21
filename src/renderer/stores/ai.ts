@@ -9,14 +9,13 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 
 const aiStore = new Store({ name: 'ai' });
 
-// NVIDIA NIM defaults. Nemotron reasoning model per project owner's choice.
-// ⚠️ apiKey below is a personal dev key that was shared in plaintext — treat it as
-// compromised and ROTATE it at build.nvidia.com; replace here or clear it in Settings.
+// NVIDIA NIM defaults. Nemotron reasoning model. API key is never shipped in source —
+// the user enters it in Settings (persisted locally via electron-store).
 const DEFAULTS = {
    provider: 'nim' as AiProviderType,
    baseUrl: 'https://integrate.api.nvidia.com/v1',
    model: 'nvidia/nemotron-3-ultra-550b-a55b',
-   apiKey: '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',
+   apiKey: '',
    enableThinking: true,
    reasoningBudget: 8192
 };

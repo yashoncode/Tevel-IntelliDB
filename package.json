@@ -1,7 +1,7 @@
 {
   "name": "tevel-intellidb",
   "productName": "Tevel IntelliDB",
-  "version": "0.7.35",
+  "version": "0.7.36",
   "description": "An AI-first SQL client that reasons over database metadata to turn natural language into safe, reviewable SQL.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -38,7 +38,7 @@
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "asar": true,
-    "buildDependenciesFromSource": true,
+    "buildDependenciesFromSource": false,
     "directories": {
       "output": "build",
       "buildResources": "assets"
