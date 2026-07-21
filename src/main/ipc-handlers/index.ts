@@ -1,5 +1,6 @@
 import * as antares from 'common/interfaces/antares';
 
+import ai from './ai';
 import application from './application';
 import connection from './connection';
 import database from './database';
@@ -26,6 +27,7 @@ export default () => {
    database(connections);
    schema(connections);
    users(connections);
+   ai(connections);
    updates();
    application();
 };

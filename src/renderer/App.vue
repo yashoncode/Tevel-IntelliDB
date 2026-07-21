@@ -15,6 +15,7 @@
             <TheFooter />
             <TheNotificationsBoard />
             <TheScratchpad v-if="isScratchpad" />
+            <TheAiAssistant v-if="isAiAssistant" />
             <ModalSettings v-if="isSettingModal" />
             <BaseTextEditor class="d-none" value="" />
          </div>
@@ -58,6 +59,7 @@ const WorkspaceAddConnectionPanel = defineAsyncComponent(() => import(/* webpack
 const ModalSettings = defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings.vue'));
 const ModalAllConnections = defineAsyncComponent(() => import(/* webpackChunkName: "ModalAllConnections" */'@/components/ModalAllConnections.vue'));
 const TheScratchpad = defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad.vue'));
+const TheAiAssistant = defineAsyncComponent(() => import(/* webpackChunkName: "TheAiAssistant" */'@/components/TheAiAssistant.vue'));
 const BaseTextEditor = defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor.vue'));
 
 const applicationStore = useApplicationStore();
@@ -67,7 +69,8 @@ const workspacesStore = useWorkspacesStore();
 
 const {
    isSettingModal,
-   isScratchpad
+   isScratchpad,
+   isAiAssistant
 } = storeToRefs(applicationStore);
 const { connections } = storeToRefs(connectionsStore);
 const { applicationTheme, disableBlur } = storeToRefs(settingsStore);

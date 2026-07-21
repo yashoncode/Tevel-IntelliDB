@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../../",
+    "outDir": "../../dist-test",
+    "module": "CommonJS",
+    "target": "ES2021",
+    "noEmit": false,
+    "sourceMap": false,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": false,
+    "types": ["node"],
+    "paths": {
+      "common/*": ["./src/common/*"],
+      "@/*": ["./src/renderer/*"]
+    }
+  },
+  "include": [
+    "./**/*.ts",
+    "../../src/main/libs/ai/**/*.ts",
+    "../../src/common/interfaces/ai.ts"
+  ]
+}

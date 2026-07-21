@@ -1,111 +1,68 @@
-
 <!-- markdownlint-disable -->
 <p align="center">
     <img width="800" src="https://raw.githubusercontent.com/antares-sql/antares/master/docs/gh-logo.png">
 </p>
 <!-- markdownlint-restore -->
 
-# Antares SQL Client
+# Tevel IntelliDB
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/antares-sql/antares) ![GitHub](https://img.shields.io/github/license/antares-sql/antares) ![Test e2e](https://github.com/antares-sql/antares/actions/workflows/test-e2e-win.yml/badge.svg?branch=develop) ![Mastodon Follow](https://img.shields.io/mastodon/follow/%20110860460902482117?domain=https%3A%2F%2Ffosstodon.org&style=social) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
+**An AI-first SQL client — a database engineer, not just a chat box.**
 
-Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
-Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
+Tevel IntelliDB is a fork of the excellent [Antares SQL](https://github.com/antares-sql/antares) client, extended with a deep **Schema Intelligence Layer** and a natural-language → SQL pipeline. Ask a question in plain English; Tevel retrieves the relevant schema, writes the query, validates it for safety, and hands you a preview to review and run.
 
-**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB, PostgreSQL, SQLite and Firebird SQL.  
-However, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
-We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
+> 🔒 **Privacy first:** the AI reasons over database **metadata only** — schemas, tables, columns, keys, constraints, indexes, relationships. It **never** receives table rows, query results, or customer data.
 
-🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/antares-sql/antares/releases/latest).  
-👁 To stay tuned for new releases follow Antares SQL on [Mastodon](https://fosstodon.org/@AntaresSQL).  
-🌟 Don't forget to **leave a star** if you appreciate this project.  
+## 🙏 Thanks to Antares
 
-🗳️ Polls:
+Tevel IntelliDB stands entirely on the shoulders of [**Antares SQL**](https://github.com/antares-sql/antares) by [Fabio Di Stasio](https://fabiodistasio.it/) and its [wonderful community of contributors](#contributors-).
 
-- **[Which is the main OS you use Antares on?](https://github.com/antares-sql/antares/discussions/379)**
-- **[Which database do you use the most?](https://github.com/antares-sql/antares/discussions/594)**
+Antares gave us a mature, battle-tested foundation that we reuse as-is — the connection manager, database drivers (MySQL/MariaDB, PostgreSQL, SQLite, Firebird), query execution, SSH/SSL tunneling, the result grid, tabs, and the database explorer. None of the AI work here would have been possible without their years of thoughtful engineering, and their commitment to a **forever 100% free and open-source** SQL client.
 
-## Current key features
+**Thank you, Antares team.** 💛 If you appreciate this project, please go [star the original Antares repository](https://github.com/antares-sql/antares) and [try Antares itself](https://github.com/antares-sql/antares/releases/latest) — it's a fantastic SQL client in its own right.
 
-- Multiple database connections at same time.
-- Database management (add/edit/delete).
-- Full tables management, including indexes and foreign keys.
-- Views, triggers, stored routines, functions and schedulers management (add/edit/delete).
-- A modern and friendly tab system; keep open every kind of tab you need in your workspace.
-- Fake table data filler to generate tons of data for test purpose.
-- Query suggestions and auto complete.
-- Query history: search through the last 1000 queries.
-- Save queries, notes or todo.
-- SSH tunnel support.
-- Manual commit mode.
-- Import and export database dumps.
-- Customizable keyboard shortcuts.
-- Dark and light theme.
-- Editor themes.
+Tevel IntelliDB remains MIT-licensed, like Antares.
 
-## Philosophy
+## ✨ AI features (added by Tevel)
 
-Why are we developing an SQL client when there are a lot of them on the market?  
-The main goal is to develop a **forever 100% free (without paid premium feature)**, full featured, as possible community driven, cross platform and open source alternative, empowered by JavaScript ecosystem.  
-A modern application created with minimalism and simplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenues; productivity comes first.  
+- **Natural language → SQL** with a safe, reviewable preview — nothing runs until you say so.
+- **Schema Intelligence Layer** — a deterministic table ranker, a foreign-key relationship graph with join-path finding, and a business vocabulary that understands cryptic names (`tbl_cust_hdr` → *customer header*).
+- **Read-only safety gate** — blocks `INSERT/UPDATE/DELETE/DROP/ALTER/TRUNCATE`, injection, and `EXPLAIN ANALYZE` unless you explicitly enable write mode.
+- **Auto-repair loop** — invalid SQL is fed back to the model with the error until it validates.
+- **Schema Chat** — ask questions about structure and relationships.
+- **Bring your own model** — defaults to **NVIDIA NIM** (Nemotron), and works with any OpenAI-compatible endpoint: OpenAI, OpenRouter, LM Studio, Ollama.
 
-## Installation
+See [`docs/tevel/`](./docs/tevel/) for the architecture map, roadmap, and implementation notes.
 
-Based on your operating system you can have one or more distribution formats to choose based on your preferences.  
-Since Antares SQL is a free software we don't have a budget to spend on annual licenses or certificates. This can result that on some platforms you might need to put in some additional work to install this app.
+## 🗄️ Inherited Antares features
 
-### Linux
+- Multiple simultaneous database connections.
+- Full table management, including indexes and foreign keys.
+- Views, triggers, stored routines, functions and schedulers management.
+- Modern tab system, query history, saved queries/notes, fake data filler.
+- SSH tunnel support, manual commit mode, import/export dumps.
+- Customizable shortcuts, dark/light themes, editor themes.
 
-On Linux you can simply download and run the `.AppImage` distribution, install from FlatHub, Snap Store, AUR or from our [PPA repository](https://github.com/antares-sql/antares-ppa).
+## 🧩 Supported databases
 
-### Windows
-
-On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/downloads) or [this github repo](https://github.com/antares-sql/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
-
-### MacOS
-
-On macOS you can run `.dmg` distribution following [this guide](https://support.apple.com/guide/mac-help/mh40616/mac) to install apps from unknown developers.
-
-## Download
-
-[<img height='56' alt='Download on Flathub' src='https://dl.flathub.org/assets/badges/flathub-badge-en.svg'/>](https://flathub.org/apps/it.fabiodistasio.AntaresSQL) [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/antares) [![Get it from AUR](https://raw.githubusercontent.com/antares-sql/antares/master/docs/aur-badge.svg)](https://aur.archlinux.org/packages/antares-sql-bin) [<img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" style="height: 56px">](https://www.microsoft.com/p/antares-sql-client/9nhtb9sq51r1?cid=storebadge&ocid=badge&rtc=1&activetab=pivot:overviewtab)  
-🚀 **[Other Downloads](https://github.com/antares-sql/antares/releases/latest)**
-
-## Currently supported
-
-### Databases
-
-- [x] MySQL/MariaDB
+- [x] MySQL / MariaDB
 - [x] PostgreSQL
 - [x] SQLite
 - [x] Firebird SQL
-- [ ] DuckDB
-- [ ] SQL Server
-- [ ] More...
 
-### Operating Systems
+## 🚀 Development
 
-#### • x64
+```bash
+npm install                 # requires a C toolchain for native modules (better-sqlite3, ssh2)
+npm run rebuild:electron
+npm run debug               # launch the app
 
-- [x] Windows
-- [x] Linux
-- [x] MacOS
-
-#### • ARM
-
-- [ ] Windows
-- [x] Linux
-- [ ] MacOS
-
-## How to contribute
-
-- 🌍 [Translate Antares](https://github.com/antares-sql/antares/wiki/Translate-Antares)
-- 📖 [Contributors Guide](https://github.com/antares-sql/antares/wiki/Contributors-Guide)
-- 🚧 [Project Board](https://github.com/orgs/antares-sql/projects/3/views/2)
+npm run test:ai             # AI-layer unit tests
+npm run compile             # production build (main + workers + renderer)
+```
 
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Tevel IntelliDB inherits and gratefully credits the Antares contributors below. Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -171,4 +128,4 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. The contributors above are from the upstream [Antares SQL](https://github.com/antares-sql/antares) project — all credit to them.

@@ -22,6 +22,7 @@
     "translation:check": "ts-node ./scripts/translationCheck.ts",
     "test:e2e": "npm run compile && npm run test:e2e-dry",
     "test:e2e-dry": "xvfb-maybe -- playwright test",
+    "test:ai": "tsc -p tests/ai/tsconfig.json && node --test dist-test/tests/ai/*.test.js",
     "lint": "eslint . --ext .js,.ts,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
     "lint:fix": "eslint . --ext .js,.ts,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
     "contributors:add": "all-contributors add",
