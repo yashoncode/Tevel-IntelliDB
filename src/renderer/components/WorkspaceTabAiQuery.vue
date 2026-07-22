@@ -1,5 +1,5 @@
 <template>
-   <div v-show="isSelected" class="ai-query-tab column col-12 p-relative">
+   <div v-show="isSelected" class="ai-query-tab column col-12">
       <!-- Toolbar -->
       <div class="ai-query-toolbar">
          <div class="ai-query-title">
@@ -381,9 +381,17 @@ onBeforeUnmount(stopThinking);
 
 <style lang="scss" scoped>
 .ai-query-tab {
+   // The tab content is nested in a flex-wrap row wrapper with auto height, so
+   // height:100% has nothing to resolve against. Anchor to .workspace-tabs (the
+   // positioned ancestor with a real height) instead; top clears the tab bar row,
+   // bottom:0 keeps the input bar pinned and gives the body a bounded height to scroll.
+   position: absolute;
+   top: 34px;
+   right: 0;
+   bottom: 0;
+   left: 0;
    display: flex;
    flex-direction: column;
-   height: 100%;
    overflow: hidden;
 }
 

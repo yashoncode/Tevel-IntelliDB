@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.4](https://github.com/yashoncode/tevel-intellidb/compare/v1.15.3...v1.15.4) (2026-07-22)
+
+
+### Bug Fixes
+
+* **ai:** AI Query chat panel now scrolls correctly — anchor the tab to its positioned container instead of relying on an auto-height flex wrapper
+
 ### [1.15.3](https://github.com/yashoncode/tevel-intellidb/compare/v1.15.2...v1.15.3) (2026-07-22)
 
 
