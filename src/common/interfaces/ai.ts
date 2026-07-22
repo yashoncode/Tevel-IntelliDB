@@ -1,4 +1,4 @@
-// Tevel IntelliDB — shared AI types (main <-> renderer).
+// Tevel IntelliDB: shared AI types (main <-> renderer).
 // SAFETY INVARIANT: nothing in this file may carry table row data. Metadata only.
 
 /** A single column, metadata only. */
@@ -22,7 +22,7 @@ export interface AiForeignKey {
 
 /**
  * Minimal shape the snapshot adapter reads from a raw DB-client column descriptor.
- * Antares' TableField is structurally assignable to this — we depend on the subset
+ * Antares' TableField is structurally assignable to this, we depend on the subset
  * only, so the AI core stays decoupled from the driver type graph.
  */
 export interface RawColumnMeta {
@@ -94,7 +94,7 @@ export interface AiChatOptions {
    topP?: number;
 }
 
-/** Result of the NL -> SQL pipeline. Preview only — never auto-executed. */
+/** Result of the NL -> SQL pipeline. Preview only, never auto-executed. */
 export interface GenerateSqlResult {
    sql: string;
    explanation: string;

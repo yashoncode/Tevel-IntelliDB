@@ -1,4 +1,4 @@
-// Tevel IntelliDB — token-budgeted prompt builder.
+// Tevel IntelliDB: token-budgeted prompt builder.
 // Turns retrieved metadata into a compact schema context + instructions.
 
 import type { AiMessage, AiTable } from 'common/interfaces/ai';

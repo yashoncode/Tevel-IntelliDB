@@ -1,4 +1,4 @@
-// Tevel IntelliDB — NL -> SQL pipeline.
+// Tevel IntelliDB: NL -> SQL pipeline.
 // retrieve (rank) -> enrich (metadata only) -> prompt -> LLM -> validate -> repair -> preview.
 // Decoupled from Electron: the caller passes an `enrich` fn that loads column/FK metadata
 // for the retrieved tables (in production, via the DB client; in tests, a stub).

@@ -1,6 +1,6 @@
-// Tevel IntelliDB — the no-row-data boundary.
+// Tevel IntelliDB: the no-row-data boundary.
 // Every object the AI layer sees is constructed HERE by explicit field whitelist.
-// Row data cannot pass through because we never copy arbitrary fields — only the
+// Row data cannot pass through because we never copy arbitrary fields, only the
 // named metadata properties below. This is the tested safety guarantee.
 
 import type {

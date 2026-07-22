@@ -10,7 +10,7 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 
 const aiStore = new Store({ name: 'ai' });
 
-// NVIDIA NIM defaults. Nemotron reasoning model. API key is never shipped in source —
+// NVIDIA NIM defaults. Nemotron reasoning model. API key is never shipped in source
 // the user enters it in Settings (persisted locally via electron-store).
 const DEFAULTS = {
    provider: 'nim' as AiProviderType,
@@ -41,7 +41,7 @@ export const useAiStore = defineStore('ai', {
       writeMode: aiStore.get('write_mode', false) as boolean,
       maxTables: aiStore.get('max_tables', 12) as number,
       vocabulary: aiStore.get('vocabulary', {}) as Record<string, string>,
-      // runtime — last error surfaced to the AI Query tab
+      // runtime, last error surfaced to the AI Query tab
       error: ''
    }),
    getters: {

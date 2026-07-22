@@ -119,11 +119,11 @@
                <div class="form-group mt-2">
                   <button
                      class="btn btn-sm"
-                     :class="testState.cls"
+                     :class="[testState.cls, { loading: testing }]"
                      :disabled="testing"
                      @click="testConn"
                   >
-                     <span v-if="testing" class="loading loading-sm mr-1" />{{ testState.label }}
+                     {{ testing ? '' : testState.label }}
                   </button>
                </div>
             </div>

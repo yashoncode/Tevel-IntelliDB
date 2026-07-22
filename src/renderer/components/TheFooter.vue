@@ -109,7 +109,7 @@ const workspace = computed(() => getWorkspace(workspaceUid.value));
 const accentColor = computed(() => {
    if (getConnectionFolder(workspaceUid.value)?.color)
       return getConnectionFolder(workspaceUid.value).color;
-   return '#E36929';
+   return '#1e40af';
 });
 const connectionInfos = computed(() => getConnectionByUid(workspaceUid.value));
 const version: ComputedRef<DatabaseInfos> = computed(() => {

@@ -54,7 +54,7 @@ flowchart TD
     LLM -->|"prose"| ANSWER["Schema answer (markdown)"]
 ```
 
-**The retrieval step (RAG):** the first time you use AI on a connection, each table's *doc* (name + humanized name + comment) is embedded via your provider's embeddings endpoint and cached to a small JSON file under the app's user-data dir — no vector-DB process, no native modules. Each question is embedded on the fly; cosine similarity is blended with the keyword ranker so semantically-related tables surface even when the wording doesn't match. If embeddings are disabled or the endpoint is unavailable, retrieval falls back to keyword ranking — the pipeline never breaks. Core pieces live in [`src/main/libs/ai/`](./src/main/libs/ai/).
+**The retrieval step (RAG):** the first time you use AI on a connection, each table's *doc* (name + humanized name + comment) is embedded via your provider's embeddings endpoint and cached to a small JSON file under the app's user-data dir ; no vector-DB process, no native modules. Each question is embedded on the fly; cosine similarity is blended with the keyword ranker so semantically-related tables surface even when the wording doesn't match. If embeddings are disabled or the endpoint is unavailable, retrieval falls back to keyword ranking, the pipeline never breaks. Core pieces live in [`src/main/libs/ai/`](./src/main/libs/ai/).
 
 ## 🧩 Supported databases
 

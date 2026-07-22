@@ -73,15 +73,16 @@ const isMacOS = process.platform === 'darwin';
 const isWindows = process.platform === 'win32';
 const isLinux = process.platform === 'linux';
 
+const APP_NAME = 'Tevel IntelliDB';
 const windowTitle = computed(() => {
-   if (!selectedWorkspace.value) return '';
-   if (selectedWorkspace.value === 'NEW') return t('connection.createNewConnection');
+   if (!selectedWorkspace.value) return APP_NAME;
+   if (selectedWorkspace.value === 'NEW') return `${APP_NAME} • ${t('connection.createNewConnection')}`;
 
    const connectionName = getConnectionName(selectedWorkspace.value);
    const workspace = getWorkspace(selectedWorkspace.value);
    const breadcrumbs = workspace ? Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client] : [];
 
-   return [connectionName, ...breadcrumbs].join(' • ');
+   return [APP_NAME, connectionName, ...breadcrumbs].join(' • ');
 });
 
 const openDevTools = () => {

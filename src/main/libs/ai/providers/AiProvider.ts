@@ -1,4 +1,4 @@
-// Tevel IntelliDB — provider abstraction.
+// Tevel IntelliDB: provider abstraction.
 
 import type {
    AiChatOptions, AiEmbedOptions, AiMessage, AiProviderConfig
@@ -8,14 +8,14 @@ import { OpenAiCompatibleProvider } from './OpenAiCompatibleProvider';
 
 export interface AiProvider {
    chat (messages: AiMessage[], options?: AiChatOptions): Promise<string>;
-   /** Embed texts for semantic retrieval. Optional — not every provider supports it. */
+   /** Embed texts for semantic retrieval. Optional, not every provider supports it. */
    embed? (texts: string[], options?: AiEmbedOptions): Promise<number[][]>;
 }
 
 /**
  * NVIDIA NIM, OpenAI, OpenRouter, LM Studio and Ollama all expose an OpenAI-compatible
  * /chat/completions endpoint, so one client serves them. Anthropic uses a different
- * wire format — add a dedicated provider when we need it (ROADMAP Phase 5).
+ * wire format, add a dedicated provider when we need it (ROADMAP Phase 5).
  */
 export function createProvider (config: AiProviderConfig): AiProvider {
    switch (config.type) {

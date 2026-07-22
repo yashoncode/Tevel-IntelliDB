@@ -1,4 +1,4 @@
-// Tevel IntelliDB — lightweight intent router for the AI Query tab.
+// Tevel IntelliDB: lightweight intent router for the AI Query tab.
 // Decides whether a natural-language message wants generated SQL ('sql') or a prose
 // answer about the schema ('chat'). Deterministic + instant (no LLM call). The UI
 // exposes an Auto/SQL/Ask override, so this only needs to be right most of the time.

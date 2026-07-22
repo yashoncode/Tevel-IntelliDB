@@ -1,8 +1,8 @@
 /* stylelint-disable */
 :root {
-  --primary-color: #e36929;
+  --primary-color: #1e40af;
   --primary-color-dark: color-mix(in srgb, var(--primary-color), #000 30%);
-  --primary-color-shadow: 0 0 0 0.1rem rgba(227, 105, 41, 0.2);
+  --primary-color-shadow: 0 0 0 0.1rem rgba(30, 64, 175, 0.2);
 }
 
 @import "~spectre.css/src/variables";

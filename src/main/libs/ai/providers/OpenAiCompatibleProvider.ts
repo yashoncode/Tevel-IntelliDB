@@ -1,4 +1,4 @@
-// Tevel IntelliDB — OpenAI-compatible chat provider (NIM default).
+// Tevel IntelliDB: OpenAI-compatible chat provider (NIM default).
 // Uses the global fetch (Electron main runs on Node >=18). No SDK dependency.
 
 import type {

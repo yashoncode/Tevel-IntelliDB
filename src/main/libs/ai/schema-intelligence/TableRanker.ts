@@ -1,4 +1,4 @@
-// Tevel IntelliDB — deterministic table ranker (the default retriever).
+// Tevel IntelliDB: deterministic table ranker (the default retriever).
 // Scores tables against the NL question by name/comment/vocabulary overlap.
 // No embeddings, no network, <1ms for hundreds of tables. Embeddings are a later,
 // flag-gated add for very large schemas (see ROADMAP T2.7).
@@ -30,7 +30,7 @@ export function questionTerms (question: string): string[] {
       .filter(w => w.length > 1 && !STOPWORDS.has(w));
 }
 
-/** Raw keyword score for EVERY table (unsorted, unfiltered) — the blend layer needs all of them. */
+/** Raw keyword score for EVERY table (unsorted, unfiltered), the blend layer needs all of them. */
 export function scoreTables (
    question: string,
    tables: AiTableRef[],

@@ -14,7 +14,7 @@ import { buildSchemaAnswerPrompt } from '../libs/ai/schema-intelligence/PromptBu
 import { buildTableSnapshot } from '../libs/ai/schema-intelligence/SchemaSnapshot';
 import { validateSender } from '../libs/misc/validateSender';
 
-// On-disk vector cache: one JSON file per connection+schema under userData. Best-effort —
+// On-disk vector cache: one JSON file per connection+schema under userData. Best-effort
 // any read/write failure just means we re-embed. No native module, no vector DB process.
 const vectorCache: VectorCache = {
    get (key) {
@@ -37,7 +37,7 @@ const vectorCache: VectorCache = {
 };
 
 export default (connections: Record<string, antares.Client>) => {
-   // Load full metadata (columns + FKs) for the retrieved tables. METADATA ONLY —
+   // Load full metadata (columns + FKs) for the retrieved tables. METADATA ONLY
    // never getTableData / row-returning methods.
    async function enrichTables (conn: antares.Client, refs: AiTableRef[]): Promise<AiTable[]> {
       const out: AiTable[] = [];

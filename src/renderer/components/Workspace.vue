@@ -455,36 +455,14 @@
                   </li>
                </template>
                <template #footer>
-                  <li class="tab-item dropdown tab-add-dropdown">
+                  <li class="tab-item">
                      <a
-                        class="tab-add dropdown-toggle"
-                        tabindex="0"
+                        class="tab-add"
                         :title="t('application.openNewTab')"
+                        @click="toggleAddMenu"
                      >
                         <BaseIcon icon-name="mdiPlus" :size="24" />
                      </a>
-                     <ul class="menu text-left">
-                        <li class="menu-item">
-                           <a class="c-hand p-vcentered" @click="addQueryTab">
-                              <BaseIcon
-                                 icon-name="mdiCodeTags"
-                                 :size="18"
-                                 class="mr-1"
-                              />
-                              <span>Query Editor</span>
-                           </a>
-                        </li>
-                        <li class="menu-item">
-                           <a class="c-hand p-vcentered" @click="addAiQueryTab">
-                              <BaseIcon
-                                 icon-name="mdiCreation"
-                                 :size="18"
-                                 class="mr-1"
-                              />
-                              <span>AI Query</span>
-                           </a>
-                        </li>
-                     </ul>
                   </li>
                </template>
             </Draggable>
@@ -665,6 +643,41 @@
          @confirm="closeTab(unsavedTab, true)"
          @close="unsavedTab = null"
       />
+
+      <Teleport to="#window-content">
+         <div
+            v-if="addMenuOpen"
+            class="tab-add-backdrop"
+            @click="addMenuOpen = false"
+         >
+            <ul
+               class="menu tab-add-menu"
+               :style="addMenuStyle"
+               @click.stop
+            >
+               <li class="menu-item">
+                  <a class="c-hand p-vcentered" @click="chooseTab('query')">
+                     <BaseIcon
+                        icon-name="mdiCodeTags"
+                        :size="18"
+                        class="mr-1"
+                     />
+                     <span>Query Editor</span>
+                  </a>
+               </li>
+               <li class="menu-item">
+                  <a class="c-hand p-vcentered" @click="chooseTab('ai-query')">
+                     <BaseIcon
+                        icon-name="mdiCreation"
+                        :size="18"
+                        class="mr-1"
+                     />
+                     <span>AI Query</span>
+                  </a>
+               </li>
+            </ul>
+         </div>
+      </Teleport>
    </div>
 </template>
 
@@ -795,6 +808,24 @@ const addQueryTab = () => {
 
 const addAiQueryTab = () => {
    newTab({ uid: props.connection.uid, type: 'ai-query', schema: workspace.value.breadcrumbs.schema });
+};
+
+// "+" tab menu: teleported + fixed-positioned so the tab strip's overflow never clips it.
+const addMenuOpen = ref(false);
+const addMenuStyle = ref<Record<string, string>>({});
+const toggleAddMenu = (e: MouseEvent) => {
+   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+   addMenuStyle.value = {
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      right: `${Math.max(4, window.innerWidth - rect.right)}px`
+   };
+   addMenuOpen.value = !addMenuOpen.value;
+};
+const chooseTab = (type: 'query' | 'ai-query') => {
+   addMenuOpen.value = false;
+   if (type === 'ai-query') addAiQueryTab();
+   else addQueryTab();
 };
 
 const getSelectedTab = () => {
@@ -1047,38 +1078,48 @@ onMounted(() => {
           margin-left: 56px;
         }
 
-        &.tab-add-dropdown {
-          position: relative;
-
-          .tab-add:focus {
-            opacity: 1;
-            outline: 0;
-            box-shadow: none;
-          }
-
-          .menu {
-            right: 0;
-            left: auto;
-            min-width: 160px;
-            z-index: 9;
-
-            .menu-item a {
-              display: flex;
-              align-items: center;
-              color: inherit;
-              border-radius: $border-radius;
-              padding: 0.2rem 0.4rem;
-              text-decoration: none;
-              white-space: nowrap;
-              border: 0;
-            }
-          }
-        }
-
         .workspace-tools-link {
           padding-bottom: 0;
           padding-top: 0.3rem;
         }
+      }
+    }
+  }
+}
+
+// "+" new-tab menu (teleported to #window-content so the tab strip's overflow can't clip it)
+.tab-add-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+}
+
+.tab-add-menu {
+  position: fixed;
+  min-width: 172px;
+  z-index: 501;
+  margin: 0;
+  padding: 0.2rem;
+  list-style: none;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(128, 128, 128, 0.25);
+
+  .menu-item {
+    margin: 0;
+
+    a {
+      display: flex;
+      align-items: center;
+      color: inherit;
+      border-radius: $border-radius;
+      padding: 0.3rem 0.5rem;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(128, 128, 128, 0.16);
       }
     }
   }

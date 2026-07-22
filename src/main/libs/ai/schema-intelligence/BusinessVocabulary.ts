@@ -1,4 +1,4 @@
-// Tevel IntelliDB — business vocabulary.
+// Tevel IntelliDB: business vocabulary.
 // Expands cryptic DB naming (tbl_cust_hdr -> "customer header") so both the ranker
 // and the LLM understand intent. Users can extend/override via custom aliases.
 

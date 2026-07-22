@@ -1,11 +1,11 @@
-// Tevel IntelliDB — hybrid retrieval (RAG).
+// Tevel IntelliDB: hybrid retrieval (RAG).
 // Blends the deterministic keyword ranker with semantic similarity from cached
 // table embeddings. Table docs are embedded once per connection and cached; the
 // question is embedded per call. Everything degrades gracefully: if embeddings are
 // disabled or the endpoint fails, retrieval falls back to pure keyword ranking.
 //
 // No native modules, no separate vector DB: vectors live in a small JSON cache and
-// cosine similarity runs in-memory — plenty for the few-hundred/few-thousand-table
+// cosine similarity runs in-memory, plenty for the few-hundred/few-thousand-table
 // case. (See ROADMAP D2.)
 
 import type { AiTableRef } from 'common/interfaces/ai';

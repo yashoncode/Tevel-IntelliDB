@@ -1,4 +1,4 @@
-// Tevel IntelliDB — read-only SQL safety gate.
+// Tevel IntelliDB: read-only SQL safety gate.
 // Blocks any statement that could mutate data/schema unless write-mode is explicitly on.
 // This is a safety boundary: it errs toward BLOCKING. Identifier collisions with
 // SQL keywords (e.g. a column literally named "update") fail safe (blocked), by design.
@@ -64,7 +64,7 @@ export function validateSql (sql: string, writeMode = false): SqlValidationResul
          warnings.push(`Blocked: "${lead}" is not a read-only statement. Enable write mode to run it.`);
          continue;
       }
-      // EXPLAIN ANALYZE actually runs the query in PostgreSQL — block it.
+      // EXPLAIN ANALYZE actually runs the query in PostgreSQL, block it.
       if (lead === 'EXPLAIN' && tokens.includes('ANALYZE')) {
          warnings.push('Blocked: EXPLAIN ANALYZE executes the query. Enable write mode to run it.');
          continue;
