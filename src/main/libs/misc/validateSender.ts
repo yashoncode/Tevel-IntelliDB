@@ -9,7 +9,7 @@ export function validateSender (frame: WebFrameMain) {
    if (isWindows) return true; // TEMP HOTFIX
    const frameUrl = new URL(frame.url);
    const prefix = isWindows ? 'file:///' : 'file://';
-   const framePath = frameUrl.href.replace(prefix, '');
+   const framePath = decodeURIComponent(frameUrl.href.replace(prefix, ''));
 
    if ((isDevelopment && frameUrl.host === 'localhost:9080') || framePath === indexPath) return true;
    return false;
