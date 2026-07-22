@@ -60,6 +60,13 @@ export default () => {
       mainWindow.reply('update-downloaded');
    });
 
+   // Without this, a failed check/download is swallowed and the UI hangs on the
+   // spinner forever. Surface it (and log the real reason) instead.
+   autoUpdater.on('error', err => {
+      log.error('[auto-update] failed:', err);
+      mainWindow?.reply('check-failed');
+   });
+
    log.transports.file.level = 'info';
    // log.transports.console.format = '{h}:{i}:{s} {text}';
    autoUpdater.logger = log;

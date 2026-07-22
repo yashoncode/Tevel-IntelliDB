@@ -109,6 +109,17 @@
                         • {{ w }}
                      </div>
                   </div>
+                  <div
+                     v-else-if="m.result && m.result.risk !== 'safe'"
+                     class="ai-query-risk"
+                     :class="`risk-${m.result.risk}`"
+                  >
+                     <BaseIcon
+                        icon-name="mdiAlertOutline"
+                        :size="14"
+                        class="mr-1"
+                     />{{ m.result.riskReason }}
+                  </div>
                   <pre class="ai-query-sql"><code>{{ m.result?.sql || '—' }}</code></pre>
                   <div class="ai-query-sql-actions">
                      <button
@@ -136,7 +147,7 @@
                      <button
                         class="btn btn-sm btn-primary"
                         :disabled="!m.result?.sql || !m.result?.valid"
-                        @click="openInEditor(m.result.sql, true)"
+                        @click="requestRun(m.result)"
                      >
                         <BaseIcon
                            icon-name="mdiPlay"
@@ -190,6 +201,30 @@
             <BaseIcon icon-name="mdiSend" :size="18" />
          </button>
       </div>
+
+      <ConfirmModal
+         v-if="pendingRun"
+         :confirm-text="'Run anyway'"
+         @confirm="confirmRun"
+         @hide="cancelRun"
+      >
+         <template #header>
+            <div class="d-flex">
+               <BaseIcon
+                  icon-name="mdiAlertOutline"
+                  class="mr-1"
+                  :size="24"
+               />
+               <span class="cut-text">Run this query?</span>
+            </div>
+         </template>
+         <template #body>
+            <div class="mb-2">
+               {{ pendingRun.riskReason }}
+            </div>
+            <pre class="ai-query-sql"><code>{{ pendingRun.sql }}</code></pre>
+         </template>
+      </ConfirmModal>
    </div>
 </template>
 
@@ -199,6 +234,7 @@ import { AiIntent } from 'common/libs/classifyAiIntent';
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useAiStore } from '@/stores/ai';
 import { useApplicationStore } from '@/stores/application';
@@ -319,6 +355,23 @@ const openInEditor = (sql: string, run: boolean) => {
    aiStore.sendToEditor(sql, run);
 };
 
+// Confirm-to-run: safe queries run immediately; anything that mutates data or
+// schema opens a confirmation first ("run on your behalf? yes/no").
+const pendingRun = ref<GenerateSqlResult | null>(null);
+
+const requestRun = (result?: GenerateSqlResult) => {
+   if (!result?.sql || !result.valid) return;
+   if (result.risk === 'safe') aiStore.sendToEditor(result.sql, true);
+   else pendingRun.value = result;
+};
+const confirmRun = () => {
+   if (pendingRun.value) aiStore.sendToEditor(pendingRun.value.sql, true);
+   pendingRun.value = null;
+};
+const cancelRun = () => {
+   pendingRun.value = null;
+};
+
 watch(() => props.isSelected, sel => {
    if (sel) nextTick(() => inputRef.value?.focus());
 });
@@ -373,6 +426,7 @@ onBeforeUnmount(stopThinking);
 
 .ai-query-body {
    flex: 1;
+   min-height: 0; /* let the flex child shrink so overflow-y actually scrolls */
    overflow-y: auto;
    padding: 14px;
    display: flex;
@@ -451,6 +505,18 @@ onBeforeUnmount(stopThinking);
    word-break: break-word;
    overflow-x: auto;
    margin-bottom: 8px;
+}
+
+.ai-query-risk {
+   display: flex;
+   align-items: center;
+   font-size: 12px;
+   padding: 6px 10px;
+   border-radius: 8px;
+   margin-bottom: 8px;
+
+   &.risk-moderate { background: rgba(255, 176, 32, 0.16); color: #c47f00; }
+   &.risk-high { background: rgba(222, 59, 40, 0.16); color: #d0342c; }
 }
 
 .ai-query-sql-actions { display: flex; flex-wrap: wrap; gap: 8px; }

@@ -94,6 +94,12 @@ export interface AiChatOptions {
    topP?: number;
 }
 
+/**
+ * How dangerous a statement is to execute, independent of the read-only gate:
+ * safe = read-only, moderate = scoped write, high = destructive / unscoped write.
+ */
+export type SqlRisk = 'safe' | 'moderate' | 'high';
+
 /** Result of the NL -> SQL pipeline. Preview only, never auto-executed. */
 export interface GenerateSqlResult {
    sql: string;
@@ -105,6 +111,10 @@ export interface GenerateSqlResult {
    warnings: string[];
    /** How many repair attempts were spent. */
    repairAttempts: number;
+   /** Execution risk, used to gate "Run" behind a confirmation. */
+   risk: SqlRisk;
+   /** Human-readable reason for the risk level. */
+   riskReason: string;
 }
 
 export interface GenerateSqlParams {

@@ -1,7 +1,7 @@
 {
   "name": "tevel-intellidb",
   "productName": "Tevel IntelliDB",
-  "version": "1.15.2",
+  "version": "1.15.3",
   "description": "An AI-first SQL client that reasons over database metadata to turn natural language into safe, reviewable SQL.",
   "license": "MIT",
   "repository": "https://github.com/yashoncode/tevel-intellidb.git",
@@ -36,7 +36,7 @@
   },
   "build": {
     "appId": "com.tevel.intellidb",
-    "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
+    "artifactName": "Tevel-IntelliDB-${version}-${os}_${arch}.${ext}",
     "asar": true,
     "buildDependenciesFromSource": false,
     "directories": {
@@ -96,7 +96,7 @@
       "perMachine": false
     },
     "portable": {
-      "artifactName": "${productName}-${version}-portable.exe"
+      "artifactName": "Tevel-IntelliDB-${version}-portable.exe"
     },
     "appx": {
       "displayName": "Tevel IntelliDB",

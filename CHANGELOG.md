@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.3](https://github.com/yashoncode/tevel-intellidb/compare/v1.15.2...v1.15.3) (2026-07-22)
+
+
+### Features
+
+* **ai:** classify generated-SQL execution risk (safe / moderate / high) and require confirmation before running data- or schema-modifying queries
+
+
+### Bug Fixes
+
+* **ai:** AI Query chat panel not scrolling with long conversations
+* **updater:** surface auto-update errors instead of hanging silently on the download spinner
+* **build:** remove spaces from release artifact names so the auto-updater can resolve download URLs
+
 ### [0.7.35](https://github.com/antares-sql/antares/compare/v0.7.35-beta.1...v0.7.35) (2025-06-17)
 
 ### [0.7.35-beta.1](https://github.com/antares-sql/antares/compare/v0.7.35-beta.0...v0.7.35-beta.1) (2025-04-28)

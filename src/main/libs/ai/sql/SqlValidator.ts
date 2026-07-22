@@ -3,10 +3,22 @@
 // This is a safety boundary: it errs toward BLOCKING. Identifier collisions with
 // SQL keywords (e.g. a column literally named "update") fail safe (blocked), by design.
 
+import type { SqlRisk } from 'common/interfaces/ai';
+
 export interface SqlValidationResult {
    valid: boolean;
    warnings: string[];
+   /** Execution risk (independent of the read-only gate). */
+   risk: SqlRisk;
+   riskReason: string;
 }
+
+// Schema/permission changes: irreversible, always high risk.
+const DESTRUCTIVE = new Set([
+   'DROP', 'TRUNCATE', 'ALTER', 'CREATE', 'RENAME', 'GRANT', 'REVOKE', 'REPLACE'
+]);
+// Data mutations: high if unscoped (no WHERE), otherwise moderate.
+const MUTATING = new Set(['INSERT', 'UPDATE', 'DELETE', 'MERGE', 'COPY', 'LOAD']);
 
 const ALLOWED_LEADING = new Set([
    'SELECT', 'WITH', 'EXPLAIN', 'SHOW', 'DESCRIBE', 'DESC', 'VALUES', 'TABLE'
@@ -43,17 +55,48 @@ function tokenize (statement: string): string[] {
 }
 
 /**
+ * Classify how dangerous a statement is to EXECUTE (regardless of the read-only gate).
+ * Returns the highest risk across all statements. Destructive DDL and unscoped
+ * UPDATE/DELETE are high; other data mutations are moderate; everything else is safe.
+ */
+export function classifyRisk (sql: string): { level: SqlRisk; reason: string } {
+   let level: SqlRisk = 'safe';
+   let reason = 'Read-only query — safe to run.';
+   for (const stmt of splitStatements(sql)) {
+      const tokens = tokenize(stmt);
+      if (tokens.length === 0) continue;
+
+      const destructive = tokens.find(t => DESTRUCTIVE.has(t));
+      if (destructive)
+         return { level: 'high', reason: `Contains ${destructive} — changes schema or permissions and can be irreversible.` };
+
+      const mutating = tokens.find(t => MUTATING.has(t));
+      if (mutating) {
+         if ((mutating === 'UPDATE' || mutating === 'DELETE') && !tokens.includes('WHERE'))
+            return { level: 'high', reason: `${mutating} without a WHERE clause affects every row in the table.` };
+         if (level === 'safe') {
+            level = 'moderate';
+            reason = `Contains ${mutating} — modifies data.`;
+         }
+      }
+   }
+   return { level, reason };
+}
+
+/**
  * Validate a (possibly multi-statement) SQL string.
  * In read-only mode every statement must lead with an allowed keyword and contain
  * no forbidden keyword; EXPLAIN ANALYZE is blocked (it executes the plan).
+ * `risk` is always computed (even in write mode) so the UI can gate execution.
  */
 export function validateSql (sql: string, writeMode = false): SqlValidationResult {
    const warnings: string[] = [];
-   if (!sql || !sql.trim()) return { valid: false, warnings: ['Empty query.'] };
-   if (writeMode) return { valid: true, warnings: [] };
+   const { level: risk, reason: riskReason } = classifyRisk(sql);
+   if (!sql || !sql.trim()) return { valid: false, warnings: ['Empty query.'], risk, riskReason };
+   if (writeMode) return { valid: true, warnings: [], risk, riskReason };
 
    const statements = splitStatements(sql);
-   if (statements.length === 0) return { valid: false, warnings: ['No executable statement found.'] };
+   if (statements.length === 0) return { valid: false, warnings: ['No executable statement found.'], risk, riskReason };
 
    for (const stmt of statements) {
       const tokens = tokenize(stmt);
@@ -74,5 +117,5 @@ export function validateSql (sql: string, writeMode = false): SqlValidationResul
          warnings.push(`Blocked: statement contains "${forbidden}", which can modify data or schema.`);
    }
 
-   return { valid: warnings.length === 0, warnings };
+   return { valid: warnings.length === 0, warnings, risk, riskReason };
 }

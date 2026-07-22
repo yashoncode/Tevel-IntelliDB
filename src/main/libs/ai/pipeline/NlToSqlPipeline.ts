@@ -82,6 +82,8 @@ export async function runNlToSql (input: PipelineInput, deps: PipelineDeps): Pro
       usedTables,
       valid: validation.valid,
       warnings: validation.warnings,
-      repairAttempts
+      repairAttempts,
+      risk: validation.risk,
+      riskReason: validation.riskReason
    };
 }
