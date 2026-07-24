@@ -20,6 +20,9 @@
                <li class="tab-item" :class="{'active': selectedTab === 'debug'}">
                   <a class="tab-link" @click="selectedTab = 'debug'">{{ t('application.debugConsole') }}</a>
                </li>
+               <li class="tab-item" :class="{'active': selectedTab === 'ai'}">
+                  <a class="tab-link" @click="selectedTab = 'ai'">AI Console</a>
+               </li>
             </ul>
             <div class="d-flex">
                <div
@@ -69,6 +72,31 @@
                <span class="console-log-datetime">{{ moment(log.date).format('HH:mm:ss') }}</span> <small>[{{ log.process.substring(0, 1).toUpperCase() }}]</small>: <span class="console-log-message" :class="`console-log-level-${log.level}`">{{ log.message }}</span>
             </div>
          </div>
+         <div
+            v-show="selectedTab === 'ai'"
+            ref="aiConsoleBody"
+            class="console-body"
+         >
+            <div
+               v-for="(log, i) in aiLogs"
+               :key="i"
+               class="console-log"
+               tabindex="0"
+               @contextmenu.prevent="contextMenu($event, log)"
+            >
+               <div>
+                  <span class="console-log-datetime">{{ moment(log.date).format('HH:mm:ss') }}</span>
+                  <small>[{{ log.kind === 'sql' ? 'SQL' : 'SCHEMA' }}]</small>
+                  <small class="console-log-model">{{ log.model }}</small>
+               </div>
+               <div class="console-ai-req">
+                  ▸ {{ log.request }}
+               </div>
+               <div class="console-ai-res" :class="{'console-log-level-error': log.error}">
+                  ◂ {{ log.response }}
+               </div>
+            </div>
+         </div>
       </div>
    </div>
    <BaseContextMenu
@@ -108,7 +136,8 @@ const {
    isConsoleOpen,
    consoleHeight,
    selectedTab,
-   debugLogs
+   debugLogs,
+   aiLogs
 } = storeToRefs(consoleStore);
 
 const props = defineProps({
@@ -123,6 +152,7 @@ const wrapper: Ref<HTMLInputElement> = ref(null);
 const queryConsole: Ref<HTMLInputElement> = ref(null);
 const queryConsoleBody: Ref<HTMLInputElement> = ref(null);
 const logConsoleBody: Ref<HTMLInputElement> = ref(null);
+const aiConsoleBody: Ref<HTMLInputElement> = ref(null);
 const resizer: Ref<HTMLInputElement> = ref(null);
 const localHeight = ref(consoleHeight.value);
 const isHover = ref(false);
@@ -150,9 +180,9 @@ const stopResize = () => {
    window.removeEventListener('mouseup', stopResize);
 };
 
-const contextMenu = (event: MouseEvent, wLog: {date: Date; sql?: string; message?: string}) => {
+const contextMenu = (event: MouseEvent, wLog: {date: Date; sql?: string; message?: string; request?: string; response?: string}) => {
    contextEvent.value = event;
-   contextContent.value = wLog.sql || wLog.message;
+   contextContent.value = wLog.sql || wLog.message || (wLog.request ? `${wLog.request}\n${wLog.response}` : wLog.response);
    isContext.value = true;
 };
 
@@ -183,6 +213,13 @@ watch(() => debugLogs.value.length, async () => {
    }
 });
 
+watch(() => aiLogs.value.length, async () => {
+   if (!isHover.value) {
+      await nextTick();
+      if (aiConsoleBody.value) aiConsoleBody.value.scrollTop = aiConsoleBody.value.scrollHeight;
+   }
+});
+
 watch(isConsoleOpen, async () => {
    queryConsoleBody.value.scrollTop = queryConsoleBody.value.scrollHeight;
    logConsoleBody.value.scrollTop = logConsoleBody.value.scrollHeight;
@@ -191,6 +228,7 @@ watch(isConsoleOpen, async () => {
 watch(selectedTab, async () => {
    queryConsoleBody.value.scrollTop = queryConsoleBody.value.scrollHeight;
    logConsoleBody.value.scrollTop = logConsoleBody.value.scrollHeight;
+   if (aiConsoleBody.value) aiConsoleBody.value.scrollTop = aiConsoleBody.value.scrollHeight;
 });
 
 watch(consoleHeight, async (val) => {
@@ -304,6 +342,22 @@ onMounted(() => {
 
         small {
          opacity: .6;
+        }
+
+        &-model {
+          font-style: italic;
+          margin-left: 4px;
+        }
+
+        .console-ai-req {
+          font-weight: 600;
+          opacity: 0.9;
+        }
+
+        .console-ai-res {
+          white-space: pre-wrap;
+          opacity: 0.7;
+          padding-left: 4px;
         }
       }
     }

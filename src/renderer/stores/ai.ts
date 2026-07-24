@@ -6,6 +6,7 @@ import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
 
 import Ai from '@/ipc-api/Ai';
+import { useConsoleStore } from '@/stores/console';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const aiStore = new Store({ name: 'ai' });
@@ -114,6 +115,11 @@ export const useAiStore = defineStore('ai', {
          return { uid, schema, dialect: workspace.client || 'mysql', tables };
       },
 
+      /** Record an AI request/response pair to the AI Console. */
+      logAi (kind: 'sql' | 'schema', request: string, response: string, error = false): void {
+         useConsoleStore().pushAiLog({ kind, model: this.model, request, response, error, date: new Date() });
+      },
+
       async generateSql (question: string): Promise<GenerateSqlResult | null> {
          const ctx = this.activeContext();
          if (!ctx) {
@@ -133,12 +139,18 @@ export const useAiStore = defineStore('ai', {
                vocabulary: this.vocabulary,
                useEmbeddings: this.useEmbeddings
             });
-            if (status === 'success') return response as GenerateSqlResult;
+            if (status === 'success') {
+               const result = response as GenerateSqlResult;
+               this.logAi('sql', question, result.sql || result.explanation || '(no SQL returned)');
+               return result;
+            }
             this.error = String(response);
+            this.logAi('sql', question, this.error, true);
             return null;
          }
          catch (err) {
             this.error = (err as Error).toString();
+            this.logAi('sql', question, this.error, true);
             return null;
          }
       },
@@ -165,11 +177,18 @@ export const useAiStore = defineStore('ai', {
                useEmbeddings: this.useEmbeddings,
                history
             });
-            if (status === 'success') return { ok: true, result: response as AskSchemaResult };
+            if (status === 'success') {
+               const result = response as AskSchemaResult;
+               this.logAi('schema', question, result.answer);
+               return { ok: true, result };
+            }
+            this.logAi('schema', question, String(response), true);
             return { ok: false, message: String(response) };
          }
          catch (err) {
-            return { ok: false, message: (err as Error).toString() };
+            const message = (err as Error).toString();
+            this.logAi('schema', question, message, true);
+            return { ok: false, message };
          }
       },
 

@@ -464,6 +464,15 @@
                         <BaseIcon icon-name="mdiPlus" :size="24" />
                      </a>
                   </li>
+                  <li v-if="draggableTabs.length" class="tab-item">
+                     <a
+                        class="tab-add"
+                        :title="t('application.closeAllTabs')"
+                        @click="closeAllTabs"
+                     >
+                        <BaseIcon icon-name="mdiCloseBoxMultipleOutline" :size="22" />
+                     </a>
+                  </li>
                </template>
             </Draggable>
             <WorkspaceEmptyState v-if="!draggableTabs.length" @new-tab="addQueryTab" />

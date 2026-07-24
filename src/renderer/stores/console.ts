@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 const logsSize = 1000;
 
-export type LogType = 'query' | 'debug'
+export type LogType = 'query' | 'debug' | 'ai'
 export interface QueryLog {
    cUid: string;
    sql: string;
@@ -16,11 +16,21 @@ export interface DebugLog {
    date: Date;
 }
 
+export interface AiLog {
+   kind: 'sql' | 'schema';
+   model: string;
+   request: string;
+   response: string;
+   error?: boolean;
+   date: Date;
+}
+
 export const useConsoleStore = defineStore('console', {
    state: () => ({
       isConsoleOpen: false,
       queryLogs: [] as QueryLog[],
       debugLogs: [] as DebugLog[],
+      aiLogs: [] as AiLog[],
       selectedTab: 'query' as LogType,
       consoleHeight: 0
    }),
@@ -41,6 +51,12 @@ export const useConsoleStore = defineStore('console', {
             if (this.debugLogs.length > logsSize)
                this.debugLogs = this.debugLogs.slice(0, logsSize);
          }
+      },
+      pushAiLog (record: AiLog) {
+         this.aiLogs.push(record);
+
+         if (this.aiLogs.length > logsSize)
+            this.aiLogs = this.aiLogs.slice(-logsSize); // keep the most recent
       },
       openConsole () {
          this.isConsoleOpen = true;
