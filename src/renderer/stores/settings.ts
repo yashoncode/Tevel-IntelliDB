@@ -22,6 +22,7 @@ export const useSettingsStore = defineStore('settings', {
       notificationsTimeout: settingsStore.get('notifications_timeout', 5) as number,
       showTableSize: settingsStore.get('show_table_size', false) as boolean,
       dataTabLimit: settingsStore.get('data_tab_limit', 1000) as number,
+      performanceMode: settingsStore.get('performance_mode', false) as boolean,
       autoComplete: settingsStore.get('auto_complete', true) as boolean,
       lineWrap: settingsStore.get('line_wrap', true) as boolean,
       executeSelected: settingsStore.get('execute_selected', true) as boolean,
@@ -42,6 +43,10 @@ export const useSettingsStore = defineStore('settings', {
       changePageSize (limit: number) {
          this.dataTabLimit = limit;
          settingsStore.set('data_tab_limit', this.dataTabLimit);
+      },
+      changePerformanceMode (value: boolean) {
+         this.performanceMode = value;
+         settingsStore.set('performance_mode', this.performanceMode);
       },
       changeAllowPrerelease (allow: boolean) {
          this.allowPrerelease = allow;

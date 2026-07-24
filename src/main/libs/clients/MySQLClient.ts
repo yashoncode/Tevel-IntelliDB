@@ -195,6 +195,14 @@ export class MySQLClient extends BaseClient {
       else
          this._connection = await this.getConnectionPool();
 
+      // Opt-in perf tuning (Settings → Performance mode, default off): give this
+      // session bigger sort/join/read buffers for faster reads. Best-effort — some
+      // managed servers restrict SET SESSION, so it must never break connecting.
+      const Store = require('electron-store');
+      Store.initRenderer();
+      const isPerfMode = new Store({ name: 'settings' }).get('performance_mode', false);
+      const perfSessionSql = 'SET SESSION sort_buffer_size = 4194304, join_buffer_size = 4194304, read_rnd_buffer_size = 2097152';
+
       // ANSI_QUOTES check
       const [response] = await this._connection.query<mysql.RowDataPacket[]>('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
       this.sqlMode = response[0]?.Value?.split(',');
@@ -206,6 +214,15 @@ export class MySQLClient extends BaseClient {
       if (this._params.readonly)
          await this._connection.query('SET SESSION TRANSACTION READ ONLY');
 
+      if (isPerfMode) {
+         try {
+            await this._connection.query(perfSessionSql);
+         }
+         catch {
+            /* server restricts session buffers; ignore */
+         }
+      }
+
       if (this._poolSize) {
          const hasAnsiQuotes = this.sqlMode.includes('ANSI') || this.sqlMode.includes('ANSI_QUOTES');
 
@@ -215,6 +232,9 @@ export class MySQLClient extends BaseClient {
 
             if (hasAnsiQuotes)
                conn.query(`SET SESSION sql_mode = '${this.sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
+
+            if (isPerfMode)
+               conn.query(perfSessionSql).catch(() => { /* server restricts session buffers; ignore */ });
          });
       }
    }

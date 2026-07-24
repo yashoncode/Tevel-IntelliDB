@@ -155,6 +155,27 @@
                               </div>
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
+                                    <label
+                                       class="form-label"
+                                       title="SQLite (per-connection): cache_size=16MB, mmap_size=256MB, temp_store=MEMORY — journal_mode/WAL untouched, so your DB file is never modified.&#10;MySQL/MariaDB (per-session, best-effort): sort_buffer_size=4MB, join_buffer_size=4MB, read_rnd_buffer_size=2MB.&#10;Applied on the next connect."
+                                    >
+                                       Performance mode
+                                    </label>
+                                 </div>
+                                 <div class="col-1 col-sm-12">
+                                    <label class="form-switch d-inline-block" @click.prevent="togglePerformanceMode">
+                                       <input type="checkbox" :checked="performanceMode">
+                                       <i class="form-icon" />
+                                    </label>
+                                 </div>
+                                 <div class="col-6 col-sm-12 px-2 p-vcentered">
+                                    <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
+                                       Trades memory for faster reads — bigger SQLite page cache/mmap and MySQL session buffers. Never modifies your database file. Hover the label for exact values; applies on next connect.
+                                    </small>
+                                 </div>
+                              </div>
+                              <div class="form-group column col-12 mb-0">
+                                 <div class="col-5 col-sm-12">
                                     <label class="form-label">
                                        {{ t('application.disableBlur') }}
                                     </label>
@@ -464,6 +485,7 @@ const {
    notificationsTimeout,
    restoreTabs,
    showTableSize,
+   performanceMode,
    disableBlur,
    applicationTheme,
    editorTheme,
@@ -485,7 +507,8 @@ const {
    changeEditorFontSize,
    updateNotificationsTimeout,
    changeDefaultCopyType,
-   changeShowTableSize
+   changeShowTableSize,
+   changePerformanceMode
 } = settingsStore;
 const {
    hideSettingModal: closeModal,
@@ -621,6 +644,10 @@ const toggleRestoreSession = () => {
 
 const toggleShowTableSize = () => {
    changeShowTableSize(!showTableSize.value);
+};
+
+const togglePerformanceMode = () => {
+   changePerformanceMode(!performanceMode.value);
 };
 
 const toggleDisableBlur = () => {

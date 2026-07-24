@@ -60,6 +60,15 @@ flowchart TD
 
 MySQL / MariaDB · PostgreSQL · SQLite · Firebird SQL
 
+## ⚡ Performance mode (optional)
+
+Off by default. Enable it in **Settings → General** to trade a little memory for faster reads on each new connection:
+
+- **SQLite** — per-connection `cache_size` 16 MB, `mmap_size` 256 MB, `temp_store = MEMORY`. Deliberately leaves `journal_mode`/WAL alone, so your database file is never modified.
+- **MySQL / MariaDB** — larger per-session `sort_buffer_size`, `join_buffer_size`, and `read_rnd_buffer_size` (best-effort; silently skipped if the server restricts `SET SESSION`).
+
+Takes effect on the next connect.
+
 ## 🚀 Development
 
 ```bash

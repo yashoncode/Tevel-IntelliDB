@@ -30,10 +30,26 @@ export class SQLiteClient extends BaseClient {
    }
 
    getConnection () {
-      return sqlite(this._params.databasePath, {
+      const connection = sqlite(this._params.databasePath, {
          fileMustExist: true,
          readonly: this._params.readonly
       });
+
+      // Opt-in read-speed pragmas (Settings → Performance mode, default off).
+      // Per-connection only — deliberately NOT journal_mode/WAL, which would
+      // persist to and mutate the user's database file. Safe on read-only conns.
+      // ponytail: fixed 16MB cache / 256MB mmap; expose exact sizes only if users hit huge DBs.
+      const Store = require('electron-store');
+      Store.initRenderer();
+      const settingsStore = new Store({ name: 'settings' });
+
+      if (settingsStore.get('performance_mode', false)) {
+         connection.pragma('cache_size = -16000');
+         connection.pragma('mmap_size = 268435456');
+         connection.pragma('temp_store = MEMORY');
+      }
+
+      return connection;
    }
 
    ping () {
