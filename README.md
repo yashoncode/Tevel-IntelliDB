@@ -60,6 +60,18 @@ flowchart TD
 
 MySQL / MariaDB · PostgreSQL · SQLite · Firebird SQL
 
+## 💻 Supported operating systems
+
+Prebuilt binaries are published for every release on the [releases page](https://github.com/yashoncode/Tevel-IntelliDB/releases):
+
+| OS | Formats | Architectures |
+|----|---------|---------------|
+| **Windows** | Installer (`.exe`, NSIS — installs per-user, no admin required) · Portable (`.exe`, run without installing) | x64 |
+| **macOS** | Disk image (`.dmg`) · Zip (`.zip`) | Intel (x64) · Apple Silicon (arm64) — native on M1–M4, no Rosetta |
+| **Linux** | AppImage (`.AppImage`, portable, no install) · Debian/Ubuntu package (`.deb`) | x64 · armv7l (32-bit ARM) |
+
+> macOS builds are unsigned — on first launch, right-click the app → **Open** to bypass Gatekeeper.
+
 ## ⚡ Performance mode (optional)
 
 Off by default. Enable it in **Settings → General** to trade a little memory for faster reads on each new connection:
