@@ -271,7 +271,7 @@ const props = defineProps({
    selectedCell: { type: String, default: null }
 });
 
-const emit = defineEmits(['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing']);
+const emit = defineEmits(['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing', 'navigate-foreign']);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isInlineEditor: Ref<any> = ref({});
@@ -558,7 +558,17 @@ const prepareToDelete = () => {
    willBeDeleted.value = true;
 };
 
-const selectRow = (event: Event, field: string) => {
+const selectRow = (event: MouseEvent, field: string) => {
+   // Ctrl/Cmd+Click on a foreign-key cell with a value navigates to the referenced
+   // record instead of toggling multi-select (non-FK cells keep multi-select).
+   if ((event.ctrlKey || event.metaKey) && isForeignKey(field)) {
+      const fk = getKeyUsage(field);
+      const value = props.row[field];
+      if (fk && value !== null && value !== undefined) {
+         emit('navigate-foreign', fk, value);
+         return;
+      }
+   }
    emit('select-row', event, props.row, field);
 };
 
@@ -575,9 +585,13 @@ const openContext = (event: MouseEvent, payload: {
    isEditable?: boolean;
    type: string;
    length: number | false;
+   foreignKey?: QueryForeign;
+   value?: string | number;
 }) => {
    payload.field = props.fields[payload.orgField].name;// Ensures field name only
    payload.isEditable = isEditable.value;
+   payload.foreignKey = getKeyUsage(payload.orgField); // FK metadata (if any) for "Navigate to foreign key row"
+   payload.value = props.row[payload.orgField];
    emit('contextmenu', event, payload);
 };
 

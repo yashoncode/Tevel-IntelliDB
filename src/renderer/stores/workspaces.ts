@@ -5,6 +5,7 @@ import {
    ConnectionParams,
    EventInfos,
    FunctionInfos,
+   QueryForeign,
    RoutineInfos,
    TableInfos,
    TriggerFunctionInfos,
@@ -823,6 +824,27 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
          persistentStore.set(uid, (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid).tabs);
          this.checkSelectedTabExists(uid);
+      },
+      /**
+       * Navigate to a foreign-key's referenced record: opens a new auto-run query tab
+       * with `SELECT * FROM refTable WHERE refField = value`. Reuses the existing query
+       * tab flow instead of threading an initial filter through the table browser (which
+       * has no open-with-filter seam). Identifiers/strings quoted per the client dialect.
+       */
+      openForeignKeyRow ({ key, value }: { key: QueryForeign; value: string | number }) {
+         const uid = this.getSelected;
+         if (!uid || uid === 'NEW' || value === null || value === undefined) return;
+
+         const workspace = this.getWorkspace(uid);
+         const client = workspace?.client as ClientCode;
+         const { elementsWrapper: ew, stringsWrapper: sw } = customizations[client];
+
+         const quotedValue = typeof value === 'number'
+            ? value
+            : `${sw}${String(value).split(sw).join(sw + sw)}${sw}`; // double the wrapper to escape
+         const sql = `SELECT * FROM ${ew}${key.refSchema}${ew}.${ew}${key.refTable}${ew} WHERE ${ew}${key.refField}${ew} = ${quotedValue}`;
+
+         this.newTab({ uid, type: 'query', content: sql, autorun: true, schema: key.refSchema });
       },
       selectTab ({ uid, tab }: {uid: string; tab: string}) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid

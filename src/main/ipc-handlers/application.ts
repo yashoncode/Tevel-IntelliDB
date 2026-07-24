@@ -17,35 +17,47 @@ export default () => {
    });
 
    ipcMain.on('set-key', (event, key) => {
-      if (safeStorage.isEncryptionAvailable()) {
-         const sessionStore = new Store({
-            name: 'session',
-            fileExtension: ''
-         });
-         const encrypted = safeStorage.encryptString(key);
-         sessionStore.set('key', encrypted);
-         event.returnValue = true;
-      }
-   });
-
-   ipcMain.on('get-key', (event) => {
-      if (!safeStorage.isEncryptionAvailable()) {
-         event.returnValue = false;
-         return;
-      }
       const sessionStore = new Store({
          name: 'session',
          fileExtension: ''
       });
 
-      try {
-         const encrypted = sessionStore.get('key') as string;
-         const key = safeStorage.decryptString(Buffer.from(encrypted, 'utf-8'));
-         event.returnValue = key;
+      if (safeStorage.isEncryptionAvailable())
+         sessionStore.set('key', safeStorage.encryptString(key));
+      else {
+         // safeStorage unavailable (e.g. Flatpak/Linux): persist the key as plain text
+         // in the same session store so it survives restarts and extra windows. Without
+         // this the key regenerated each time and clearInvalidConfig wiped the encrypted
+         // connections file — permanent data loss. Same file-system protection either way.
+         sessionStore.set('key', key);
       }
-      catch (error) {
+
+      event.returnValue = true;
+   });
+
+   ipcMain.on('get-key', (event) => {
+      const sessionStore = new Store({
+         name: 'session',
+         fileExtension: ''
+      });
+
+      const stored = sessionStore.get('key');
+      if (stored === undefined || stored === null) {
          event.returnValue = false;
+         return;
       }
+
+      // Try to decrypt (key was stored encrypted). If safeStorage is unavailable or the
+      // value was stored as plain text, decryption throws — fall back to the raw value.
+      if (safeStorage.isEncryptionAvailable()) {
+         try {
+            event.returnValue = safeStorage.decryptString(Buffer.from(stored as string, 'utf-8'));
+            return;
+         }
+         catch (error) { /* not an encrypted value — fall through to the raw read */ }
+      }
+
+      event.returnValue = typeof stored === 'string' ? stored : false;
    });
 
    ipcMain.handle('show-open-dialog', (event, options) => {

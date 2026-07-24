@@ -78,6 +78,32 @@
          </div>
       </div>
       <div
+         v-if="selectedRows.length === 1"
+         class="context-element"
+         @click="viewRow"
+      >
+         <span class="d-flex">
+            <BaseIcon
+               icon-name="mdiTableEye"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> View row
+         </span>
+      </div>
+      <div
+         v-if="selectedRows.length === 1 && selectedCell.foreignKey && selectedCell.value !== null && selectedCell.value !== undefined"
+         class="context-element"
+         @click="navigateForeign"
+      >
+         <span class="d-flex">
+            <BaseIcon
+               icon-name="mdiTableArrowRight"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> Navigate to foreign key row
+         </span>
+      </div>
+      <div
          v-if="selectedRows.length === 1 && selectedCell.isEditable && mode === 'table'"
          class="context-element"
          @click="duplicateRow"
@@ -172,7 +198,9 @@ const emit = defineEmits([
    'copy-cell',
    'copy-row',
    'duplicate-row',
-   'fill-cell'
+   'fill-cell',
+   'show-row-view',
+   'navigate-foreign'
 ]);
 
 const fakerMethods = {
@@ -252,6 +280,16 @@ const copyRow = (format: string) => {
 
 const duplicateRow = () => {
    emit('duplicate-row');
+   closeContext();
+};
+
+const viewRow = () => {
+   emit('show-row-view');
+   closeContext();
+};
+
+const navigateForeign = () => {
+   emit('navigate-foreign');
    closeContext();
 };
 

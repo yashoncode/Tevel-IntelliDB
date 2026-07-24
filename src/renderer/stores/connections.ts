@@ -1,16 +1,17 @@
+import { app } from '@electron/remote';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
 import { ipcRenderer } from 'electron';
 import * as Store from 'electron-store';
+import * as fs from 'fs';
+import * as path from 'path';
 import { defineStore } from 'pinia';
 
 import { i18n } from '@/i18n';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 import { useNotificationsStore } from './notifications';
-
-let key = localStorage.getItem('key');
 
 export interface SidebarElement {
    isFolder: boolean;
@@ -25,28 +26,52 @@ export interface SidebarElement {
 
 export interface CustomIcon {base64: string; uid: string}
 
-if (!key) { // If no key in local storage
-   const storedKey = ipcRenderer.sendSync('get-key');// Ask for key stored on disk
+/**
+ * The main-process on-disk session store is the source of truth for the encryption key,
+ * so every window and every restart share ONE key; localStorage is only a fast cache.
+ * Previously the renderer trusted localStorage first and set-key silently dropped the key
+ * where safeStorage was unavailable (Flatpak/Linux) — a second window or a restart then
+ * minted a NEW key, and clearInvalidConfig wiped the now-unreadable connections file.
+ * Permanent data loss.
+ */
+function getEncryptionKey (): string {
+   let encryptionKey = ipcRenderer.sendSync('get-key') as string | false;
 
-   if (!storedKey) { // If not stored key on disk
-      const newKey = crypto.randomBytes(16).toString('hex');
-      localStorage.setItem('key', newKey);
-      ipcRenderer.send('set-key', newKey);
-      key = newKey;
+   if (!encryptionKey) { // nothing persisted yet: reuse the cache or mint a new key
+      encryptionKey = localStorage.getItem('key') || crypto.randomBytes(16).toString('hex');
+      ipcRenderer.send('set-key', encryptionKey); // main always persists it now
    }
-   else {
-      localStorage.setItem('key', storedKey);
-      key = storedKey;
+
+   localStorage.setItem('key', encryptionKey);
+   return encryptionKey;
+}
+
+/**
+ * Build the encrypted connections store. With a stable key, a decryption failure now means
+ * genuine file corruption (not a key mismatch), so instead of silently deleting the file
+ * (the old clearInvalidConfig behaviour) we preserve it with a .corrupt suffix for manual
+ * recovery, then start clean.
+ */
+function createPersistentStore (encryptionKey: string) {
+   try {
+      const store = new Store({ name: 'connections', encryptionKey });
+      store.get('connections'); // force a decrypt now so corruption throws here, guarded
+      return store;
+   }
+   catch (error) {
+      try {
+         const filePath = path.join(app.getPath('userData'), 'connections.json');
+         if (fs.existsSync(filePath))
+            fs.renameSync(filePath, `${filePath}.corrupt-${Date.now()}`);
+      }
+      catch (backupErr) { /* best-effort backup; start clean regardless */ }
+
+      return new Store({ name: 'connections', encryptionKey });
    }
 }
-else
-   ipcRenderer.send('set-key', key);
 
-const persistentStore = new Store({
-   name: 'connections',
-   encryptionKey: key,
-   clearInvalidConfig: true
-});
+const key = getEncryptionKey();
+const persistentStore = createPersistentStore(key);
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({

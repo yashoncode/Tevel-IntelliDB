@@ -21,6 +21,8 @@
          @fill-cell="fillCell"
          @copy-row="copyRow"
          @duplicate-row="duplicateRow"
+         @show-row-view="showRowView"
+         @navigate-foreign="navigateForeignFromContext"
          @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -98,6 +100,7 @@
                   @select-row="selectRow"
                   @update-field="updateField($event, row)"
                   @contextmenu="contextMenu"
+                  @navigate-foreign="navigateForeign"
                />
             </template>
          </BaseVirtualScroll>
@@ -121,6 +124,40 @@
          <template #body>
             <div class="mb-2">
                {{ t('database.confirmToDeleteRows', selectedRows.length) }}
+            </div>
+         </template>
+      </ConfirmModal>
+
+      <ConfirmModal
+         v-if="isRowViewModal"
+         size="medium"
+         :hide-footer="true"
+         @hide="isRowViewModal = false"
+      >
+         <template #header>
+            <div class="d-flex">
+               <BaseIcon
+                  icon-name="mdiTableEye"
+                  class="mr-1"
+                  :size="24"
+               />
+               <span class="cut-text">View row</span>
+            </div>
+         </template>
+         <template #body>
+            <div class="row-view">
+               <div
+                  v-for="item in rowViewData"
+                  :key="item.key"
+                  class="row-view-item"
+               >
+                  <div class="row-view-key">
+                     {{ item.key }}
+                  </div>
+                  <div class="row-view-value" :class="{ 'is-null': item.isNull }">
+                     {{ item.value }}
+                  </div>
+               </div>
             </div>
          </template>
       </ConfirmModal>
@@ -253,7 +290,7 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
-import { QueryResult, TableField } from 'common/interfaces/antares';
+import { QueryForeign, QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
@@ -282,7 +319,7 @@ const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
 const consoleStore = useConsoleStore();
-const { getWorkspace } = useWorkspacesStore();
+const { getWorkspace, openForeignKeyRow } = useWorkspacesStore();
 
 const { /* dataTabLimit: pageSize, */ defaultCopyType } = storeToRefs(settingsStore);
 
@@ -315,6 +352,8 @@ const resultsSize = ref(0);
 const localResults: Ref<QueryResult<any>[]> = ref([]);
 const isContext = ref(false);
 const isDeleteConfirmModal = ref(false);
+const isRowViewModal = ref(false);
+const rowViewData: Ref<{ key: string; value: string; isNull: boolean }[]> = ref([]);
 const hasFocus = ref(false);
 const contextEvent = ref(null);
 const selectedCell = ref(null);
@@ -548,6 +587,35 @@ const showDeleteConfirmModal = (e: any) => {
 
 const hideDeleteConfirmModal = () => {
    isDeleteConfirmModal.value = false;
+};
+
+const showRowView = () => {
+   const row: any = localResults.value.find((r: any) => r._antares_id === selectedRows.value[0]);
+   if (!row) return;
+   rowViewData.value = Object.keys(row)
+      .filter(k => k !== '_antares_id')
+      .map(k => {
+         const val = row[k];
+         return {
+            key: k,
+            isNull: val === null,
+            value: val === null ? 'NULL' : (typeof val === 'object' ? JSON.stringify(val) : String(val))
+         };
+      });
+   isRowViewModal.value = true;
+};
+
+// Ctrl/Cmd+Click on a foreign-key cell (from the row component).
+const navigateForeign = (fk: QueryForeign, value: string | number) => {
+   openForeignKeyRow({ key: fk, value });
+};
+
+// "Navigate to foreign key row" from the cell context menu.
+const navigateForeignFromContext = () => {
+   const cell = selectedCell.value;
+   if (cell?.foreignKey)
+      openForeignKeyRow({ key: cell.foreignKey, value: cell.value });
+   closeContext();
 };
 
 const deleteSelected = () => {
@@ -1079,6 +1147,36 @@ onUnmounted(() => {
    height: 1000px;
    overflow: auto;
    overflow-anchor: none;
+}
+
+.row-view {
+   max-height: 60vh;
+   overflow-y: auto;
+
+   .row-view-item {
+      display: flex;
+      gap: 12px;
+      padding: 4px 2px;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+
+      &:last-child { border-bottom: none; }
+   }
+
+   .row-view-key {
+      flex: 0 0 34%;
+      font-weight: 600;
+      word-break: break-word;
+      opacity: 0.85;
+   }
+
+   .row-view-value {
+      flex: 1;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+
+      &.is-null { opacity: 0.5; font-style: italic; }
+   }
 }
 
 .column-resizable {
