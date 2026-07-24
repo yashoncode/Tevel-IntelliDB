@@ -63,14 +63,13 @@
                   or an <b>answer about your schema</b> — metadata only, never your row data.
                </p>
                <div class="ai-query-suggestions">
-                  <button class="chip c-hand" @click="fillExample('top 10 customers by total order value this year')">
-                     top 10 customers by total order value
-                  </button>
-                  <button class="chip c-hand" @click="fillExample('how are orders and payments related?')">
-                     how are orders and payments related?
-                  </button>
-                  <button class="chip c-hand" @click="fillExample('which tables reference the users table?')">
-                     which tables reference users?
+                  <button
+                     v-for="(s, i) in suggestions"
+                     :key="i"
+                     class="chip c-hand"
+                     @click="fillExample(s)"
+                  >
+                     {{ s }}
                   </button>
                </div>
             </div>
@@ -238,6 +237,7 @@ import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useAiStore } from '@/stores/ai';
 import { useApplicationStore } from '@/stores/application';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const props = defineProps<{
    tabUid: string;
@@ -252,6 +252,25 @@ const isConfigured = computed(() => aiStore.isConfigured);
 
 const applicationStore = useApplicationStore();
 const { showAiAssistant } = applicationStore;
+
+const workspacesStore = useWorkspacesStore();
+
+// Suggestions built from the connected schema's real tables — falls back to
+// schema-neutral prompts if the structure hasn't loaded yet.
+const suggestions = computed<string[]>(() => {
+   const ws = workspacesStore.getWorkspace(props.connection.uid);
+   const tables = (ws?.structure || [])
+      .flatMap(s => (s.tables || []).map(t => t.name))
+      .filter(Boolean);
+   if (!tables.length)
+      return ['list all tables and what they store', 'summarize this database schema', 'suggest useful indexes'];
+
+   const [t0, t1] = tables;
+   const out = [`what columns does ${t0} have?`];
+   if (t1) out.push(`how are ${t0} and ${t1} related?`);
+   out.push(`which tables reference ${t0}?`);
+   return out;
+});
 
 interface Msg {
    role: 'user' | 'assistant';
@@ -445,10 +464,9 @@ onBeforeUnmount(stopThinking);
 .ai-query-empty {
    margin: auto;
    text-align: center;
-   opacity: 0.6;
    max-width: 380px;
 
-   p { margin-top: 12px; }
+   p { margin-top: 12px; opacity: 0.6; }
 
    .ai-query-suggestions {
       display: flex;
@@ -457,7 +475,18 @@ onBeforeUnmount(stopThinking);
       gap: 6px;
       margin-top: 12px;
 
-      .chip { cursor: pointer; }
+      .chip {
+         cursor: pointer;
+         color: inherit;
+         background: rgba(128, 128, 128, 0.12);
+         border: 1px solid rgba(128, 128, 128, 0.3);
+         transition: border-color 0.15s, background 0.15s;
+
+         &:hover {
+            background: rgba(30, 64, 175, 0.14);
+            border-color: rgba(30, 64, 175, 0.6);
+         }
+      }
    }
 }
 

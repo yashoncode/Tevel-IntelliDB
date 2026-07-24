@@ -1,7 +1,7 @@
 {
   "name": "tevel-intellidb",
   "productName": "Tevel IntelliDB",
-  "version": "1.15.6",
+  "version": "1.15.7",
   "description": "An AI-first SQL client that reasons over database metadata to turn natural language into safe, reviewable SQL.",
   "license": "MIT",
   "repository": "https://github.com/yashoncode/tevel-intellidb.git",
