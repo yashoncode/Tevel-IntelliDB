@@ -115,11 +115,10 @@
 
     .modal-container,
     .modal-sm .modal-container {
-      box-shadow: 0 0 1px 0 #000;
-      background: $bg-color-dark;
+      background: rgba(29, 29, 33, 0.82); /* translucent so the frosted blur shows */
 
       .modal-header {
-        background: $bg-color-gray;
+        background: rgba(39, 39, 42, 0.72);
         color: #fff;
       }
     }

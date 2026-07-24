@@ -128,12 +128,20 @@
 
     &:target .modal-overlay,
     &.active .modal-overlay {
-      background: rgba($bg-color-dark, 0.75);
+      background: rgba($bg-color-dark, 0.45); /* lighter, more pleasant scrim */
     }
 
+    .modal-container,
+    .modal-sm .modal-container {
+      background: rgba(250, 250, 252, 0.82); /* light frosted glass */
+    }
+
+    /* Was a dark #3f3f3f bar with white text — jarring on a light modal.
+       Now a soft light header with dark text. */
     .modal-container .modal-header {
-      background: $bg-color-light-dark;
-      color: #fff;
+      background: rgba(240, 241, 245, 0.72);
+      color: $body-font-color;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
   }
 

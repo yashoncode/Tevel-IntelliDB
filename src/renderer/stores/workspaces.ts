@@ -707,6 +707,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      type,
                      database: workspaceTabs.database,
                      schema,
+                     content,
                      elementName,
                      elementType,
                      filePath
@@ -826,25 +827,30 @@ export const useWorkspacesStore = defineStore('workspaces', {
          this.checkSelectedTabExists(uid);
       },
       /**
-       * Navigate to a foreign-key's referenced record: opens a new auto-run query tab
-       * with `SELECT * FROM refTable WHERE refField = value`. Reuses the existing query
-       * tab flow instead of threading an initial filter through the table browser (which
-       * has no open-with-filter seam). Identifiers/strings quoted per the client dialect.
+       * Navigate to a foreign-key's referenced record: opens the referenced table in a
+       * real data (table-browser) tab, filtered to `refField = value`. This keeps the
+       * source table view in its own tab so the user can switch back, instead of
+       * replacing it with a SQL query editor. The filter WHERE-clause is carried on the
+       * tab's `content`; WorkspaceTabTable applies it on open (and on repeat navigation).
+       * Identifiers/strings are quoted per the client dialect.
        */
       openForeignKeyRow ({ key, value }: { key: QueryForeign; value: string | number }) {
          const uid = this.getSelected;
          if (!uid || uid === 'NEW' || value === null || value === undefined) return;
 
-         const workspace = this.getWorkspace(uid);
-         const client = workspace?.client as ClientCode;
-         const { elementsWrapper: ew, stringsWrapper: sw } = customizations[client];
+         // Seed an equality filter clausole on the referenced table's data tab. The filter
+         // panel (WorkspaceTabTableFilters) reads it, shows it as an editable row, and
+         // applies it — quoting the value per column type.
+         const clausole = { active: true, field: key.refField, op: '=', value: String(value), value2: '' };
 
-         const quotedValue = typeof value === 'number'
-            ? value
-            : `${sw}${String(value).split(sw).join(sw + sw)}${sw}`; // double the wrapper to escape
-         const sql = `SELECT * FROM ${ew}${key.refSchema}${ew}.${ew}${key.refTable}${ew} WHERE ${ew}${key.refField}${ew} = ${quotedValue}`;
-
-         this.newTab({ uid, type: 'query', content: sql, autorun: true, schema: key.refSchema });
+         this.newTab({
+            uid,
+            type: 'data',
+            schema: key.refSchema,
+            elementName: key.refTable,
+            elementType: 'table',
+            content: JSON.stringify(clausole)
+         });
       },
       selectTab ({ uid, tab }: {uid: string; tab: string}) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid

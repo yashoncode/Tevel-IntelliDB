@@ -185,6 +185,7 @@
          :fields="fields"
          :is-quering="isQuering"
          :conn-client="connection.client"
+         :init-row="fkFilterClausole"
          @filter="updateFilters"
          @filter-change="onFilterChange"
       />
@@ -558,6 +559,29 @@ watch(isSearch, (val) => {
    }
    resizeScroller();
 });
+
+// Foreign-key navigation: openForeignKeyRow opens this table's data tab carrying a
+// filter clausole (JSON) on `content`. Expose it so the filter panel shows it as an
+// editable row and applies it. Recomputes on repeat navigation (dedup reuses this tab).
+const fkFilterClausole = computed(() => {
+   const content = getWorkspace(props.connection.uid)?.tabs.find(t =>
+      t.schema === props.schema &&
+      t.elementName === props.table &&
+      ['data', 'temp-data'].includes(t.type)
+   )?.content;
+   if (!content) return null;
+   try {
+      const c = JSON.parse(content);
+      return c && c.field && c.op ? c : null;
+   }
+   catch (e) {
+      return null;
+   }
+});
+
+watch(fkFilterClausole, (c) => {
+   if (c) isSearch.value = true;
+}, { immediate: true });
 
 getTableData();
 

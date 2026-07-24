@@ -218,6 +218,9 @@ option:checked {
   .modal-sm .modal-container {
     padding: 0;
     border-radius: $border-radius;
+    overflow: hidden; /* clip header/body to the rounded glass container */
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(140, 140, 160, 0.18);
 
     .modal-header {
       padding: 0.4rem 0.8rem;
@@ -239,9 +242,15 @@ option:checked {
   }
 }
 
+/* Frosted glass: the container tint is translucent (set per theme) and this blurs
+   what shows through. Skipped when the user disables blur (#wrapper.no-blur). */
 #wrapper:not(.no-blur) {
   .modal-overlay {
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal .modal-container {
+    backdrop-filter: blur(20px) saturate(160%);
   }
 }
 

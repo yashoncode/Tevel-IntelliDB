@@ -154,7 +154,13 @@
                   <div class="row-view-key">
                      {{ item.key }}
                   </div>
-                  <div class="row-view-value" :class="{ 'is-null': item.isNull }">
+                  <div
+                     class="row-view-value c-hand"
+                     :class="{ 'is-null': item.isNull, 'just-copied': copiedKey === item.key }"
+                     title="Click or right-click to copy"
+                     @click="copyValue(item)"
+                     @contextmenu.prevent="copyValue(item)"
+                  >
                      {{ item.value }}
                   </div>
                </div>
@@ -354,6 +360,7 @@ const isContext = ref(false);
 const isDeleteConfirmModal = ref(false);
 const isRowViewModal = ref(false);
 const rowViewData: Ref<{ key: string; value: string; isNull: boolean }[]> = ref([]);
+const copiedKey = ref<string | null>(null);
 const hasFocus = ref(false);
 const contextEvent = ref(null);
 const selectedCell = ref(null);
@@ -599,10 +606,22 @@ const showRowView = () => {
          return {
             key: k,
             isNull: val === null,
-            value: val === null ? 'NULL' : (typeof val === 'object' ? JSON.stringify(val) : String(val))
+            // Leave null blank — the .is-null class renders "NULL" via ::after, so
+            // emitting the text too would double it ("NULLNULL").
+            value: val === null ? '' : (typeof val === 'object' ? JSON.stringify(val) : String(val))
          };
       });
    isRowViewModal.value = true;
+};
+
+// Click or right-click a value in the View row popup to copy it (the app suppresses
+// the native context menu, so there's no browser "Copy" otherwise).
+const copyValue = (item: { key: string; value: string }) => {
+   copyText(item.value);
+   copiedKey.value = item.key;
+   setTimeout(() => {
+      copiedKey.value = null;
+   }, 1200);
 };
 
 // Ctrl/Cmd+Click on a foreign-key cell (from the row component).
@@ -1174,8 +1193,13 @@ onUnmounted(() => {
       white-space: pre-wrap;
       word-break: break-word;
       user-select: text;
+      padding: 0 4px;
+      border-radius: 4px;
+      transition: background 0.15s;
 
+      &:hover { background: rgba(128, 128, 128, 0.12); }
       &.is-null { opacity: 0.5; font-style: italic; }
+      &.just-copied { background: rgba(30, 64, 175, 0.25); }
    }
 }
 

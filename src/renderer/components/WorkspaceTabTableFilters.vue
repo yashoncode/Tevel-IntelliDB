@@ -82,7 +82,7 @@ import customizations from 'common/customizations';
 import { FLOAT, NUMBER } from 'common/fieldTypes';
 import { ClientCode, TableField } from 'common/interfaces/antares';
 import { TableFilterClausole, TableFilterOperator } from 'common/interfaces/tableApis';
-import { computed, Prop, ref } from 'vue';
+import { computed, Prop, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -93,7 +93,8 @@ const { t } = useI18n();
 const props = defineProps({
    fields: Array as Prop<TableField[]>,
    connClient: String as Prop<ClientCode>,
-   isQuering: Boolean
+   isQuering: Boolean,
+   initRow: Object as Prop<TableFilterClausole> // seed row from foreign-key navigation
 });
 
 const emit = defineEmits(['filter-change', 'filter']);
@@ -169,7 +170,22 @@ const createClausole = (filter: TableFilterClausole) => {
    return `${ew}${filter.field}${ew} ${filter.op} ${value}`;
 };
 
-addRow();
+// Seed the panel from a foreign-key navigation clausole if present, else start empty.
+if (props.initRow)
+   rows.value = [{ ...props.initRow }];
+else
+   addRow();
+
+// Apply the seeded filter once `fields` is populated (needed to quote the value by
+// column type), and re-apply if a repeat navigation swaps in a new clausole.
+let appliedRow: TableFilterClausole = null;
+watch([() => props.fields, () => props.initRow], ([fields, row]) => {
+   if (row && fields && fields.length && row !== appliedRow) {
+      rows.value = [{ ...row }];
+      appliedRow = row;
+      doFilter();
+   }
+}, { immediate: true });
 </script>
 
 <style lang="scss">
