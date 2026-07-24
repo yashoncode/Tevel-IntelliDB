@@ -233,8 +233,8 @@ export class MySQLClient extends BaseClient {
             if (hasAnsiQuotes)
                conn.query(`SET SESSION sql_mode = '${this.sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
 
-            if (isPerfMode)
-               conn.query(perfSessionSql).catch(() => { /* server restricts session buffers; ignore */ });
+            if (isPerfMode) // pooled conns here are callback-style, not promise-wrapped
+               conn.query(perfSessionSql, () => { /* server restricts session buffers; ignore */ });
          });
       }
    }
