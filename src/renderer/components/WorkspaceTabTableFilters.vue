@@ -171,21 +171,17 @@ const createClausole = (filter: TableFilterClausole) => {
 };
 
 // Seed the panel from a foreign-key navigation clausole if present, else start empty.
+// The filter itself is applied by the table browser; here we only display it as an
+// editable row, re-syncing when a repeat navigation swaps in a new clausole.
 if (props.initRow)
    rows.value = [{ ...props.initRow }];
 else
    addRow();
 
-// Apply the seeded filter once `fields` is populated (needed to quote the value by
-// column type), and re-apply if a repeat navigation swaps in a new clausole.
-let appliedRow: TableFilterClausole = null;
-watch([() => props.fields, () => props.initRow], ([fields, row]) => {
-   if (row && fields && fields.length && row !== appliedRow) {
+watch(() => props.initRow, (row) => {
+   if (row)
       rows.value = [{ ...row }];
-      appliedRow = row;
-      doFilter();
-   }
-}, { immediate: true });
+});
 </script>
 
 <style lang="scss">

@@ -185,7 +185,7 @@
          :fields="fields"
          :is-quering="isQuering"
          :conn-client="connection.client"
-         :init-row="fkFilterClausole"
+         :init-row="fkFilterRow"
          @filter="updateFilters"
          @filter-change="onFilterChange"
       />
@@ -561,9 +561,11 @@ watch(isSearch, (val) => {
 });
 
 // Foreign-key navigation: openForeignKeyRow opens this table's data tab carrying a
-// filter clausole (JSON) on `content`. Expose it so the filter panel shows it as an
-// editable row and applies it. Recomputes on repeat navigation (dedup reuses this tab).
-const fkFilterClausole = computed(() => {
+// { where, clausole } payload (JSON) on `content`. Apply `where` directly here — in the
+// table browser's own reactive scope, before the first fetch, so there's no unfiltered
+// flash — and re-apply on repeat navigation (dedup reuses this tab). `clausole` feeds the
+// filter panel's editable row for display only.
+const fkFilter = computed(() => {
    const content = getWorkspace(props.connection.uid)?.tabs.find(t =>
       t.schema === props.schema &&
       t.elementName === props.table &&
@@ -571,16 +573,22 @@ const fkFilterClausole = computed(() => {
    )?.content;
    if (!content) return null;
    try {
-      const c = JSON.parse(content);
-      return c && c.field && c.op ? c : null;
+      const parsed = JSON.parse(content);
+      return parsed && parsed.where ? parsed : null;
    }
    catch (e) {
       return null;
    }
 });
 
-watch(fkFilterClausole, (c) => {
-   if (c) isSearch.value = true;
+const fkFilterRow = computed(() => (fkFilter.value ? fkFilter.value.clausole : null));
+
+watch(fkFilter, (f) => {
+   if (f) {
+      filters.value = [f.where];
+      isSearch.value = true;
+      getTableData();
+   }
 }, { immediate: true });
 
 getTableData();

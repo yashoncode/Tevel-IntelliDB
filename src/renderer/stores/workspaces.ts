@@ -838,9 +838,17 @@ export const useWorkspacesStore = defineStore('workspaces', {
          const uid = this.getSelected;
          if (!uid || uid === 'NEW' || value === null || value === undefined) return;
 
-         // Seed an equality filter clausole on the referenced table's data tab. The filter
-         // panel (WorkspaceTabTableFilters) reads it, shows it as an editable row, and
-         // applies it — quoting the value per column type.
+         const workspace = this.getWorkspace(uid);
+         const client = workspace?.client as ClientCode;
+         const { elementsWrapper: ew, stringsWrapper: sw } = customizations[client];
+
+         const quotedValue = typeof value === 'number'
+            ? value
+            : `${sw}${String(value).split(sw).join(sw + sw)}${sw}`; // double the wrapper to escape
+
+         // `where` is applied directly by the table browser (WorkspaceTabTable); `clausole`
+         // feeds the filter panel's editable row for display.
+         const where = `${ew}${key.refField}${ew} = ${quotedValue}`;
          const clausole = { active: true, field: key.refField, op: '=', value: String(value), value2: '' };
 
          this.newTab({
@@ -849,7 +857,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             schema: key.refSchema,
             elementName: key.refTable,
             elementType: 'table',
-            content: JSON.stringify(clausole)
+            content: JSON.stringify({ where, clausole })
          });
       },
       selectTab ({ uid, tab }: {uid: string; tab: string}) {
