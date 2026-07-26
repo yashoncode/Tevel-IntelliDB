@@ -2,7 +2,30 @@
 :root {
   --primary-color: #1e40af;
   --primary-color-dark: color-mix(in srgb, var(--primary-color), #000 30%);
-  --primary-color-shadow: 0 0 0 0.1rem rgba(30, 64, 175, 0.2);
+
+  /* A *color*, not a full shadow — TheFooter.vue rewrites it with hexToRGBA()
+     when a connection accent is set, and every call site is `0 0 0 .1rem var(…)`. */
+  --primary-color-shadow: color-mix(in srgb, var(--primary-color) 25%, transparent);
+  --primary-color-soft: color-mix(in srgb, var(--primary-color) 22%, transparent);
+
+  /* Data-type text colors — dark-theme values. .theme-light overrides these. */
+  --type-string: seagreen;
+  --type-number: cornflowerblue;
+  --type-date: coral;
+  --type-bit: lightskyblue;
+  --type-blob: darkorchid;
+  --type-array: yellowgreen;
+  --type-enum: goldenrod;
+  --type-unknown: gray;
+
+  /* Scrollbars */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.25);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.45);
+
+  /* Controls */
+  --switch-track: rgba(255, 255, 255, 0.28);
+  --segmented-bg: rgba(255, 255, 255, 0.08);
+  --segmented-thumb: #3f3f3f; /* $bg-color-light-dark — literal: variables are imported below */
 }
 
 @import "~spectre.css/src/variables";
@@ -183,10 +206,34 @@ option:checked {
   width: 100%;
 }
 
-/* Scrollbars */
+/* Scrollbars: floating translucent pill on a transparent track. The transparent
+   border + background-clip is what insets the thumb from the gutter edge, so
+   anything overriding ::-webkit-scrollbar below ~10px must reset the border. */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+  border: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  min-height: 32px;
+
+  &:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  &:active {
+    background-color: var(--scrollbar-thumb-hover);
+  }
 }
 
 /* Animations */
@@ -346,6 +393,53 @@ option:checked {
   border-color: var(--primary-color);
 }
 
+.form-checkbox .form-icon {
+  border-radius: 0.15rem;
+}
+
+/* Modern switch: wider track, borderless, knob moved with transform instead of
+   spectre's animated `left` (no layout work per frame). */
+.form-switch {
+  padding-left: 2.3rem;
+
+  .form-icon {
+    background: var(--switch-track);
+    border: none;
+    border-radius: 1rem;
+    height: 1rem;
+    width: 1.85rem;
+    top: 0.2rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .form-icon::before {
+    height: 0.8rem;
+    width: 0.8rem;
+    top: 0.1rem;
+    left: 0.1rem;
+    margin-left: 0;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 35%);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  input:checked + .form-icon::before {
+    left: 0.1rem;
+    margin-left: 0;
+    transform: translateX(0.85rem);
+  }
+
+  input:focus + .form-icon {
+    box-shadow: 0 0 0 0.2rem var(--primary-color-shadow);
+  }
+
+  input:disabled + .form-icon,
+  input.disabled + .form-icon {
+    background: var(--switch-track);
+    opacity: 0.45;
+  }
+}
+
 .form-select {
   cursor: pointer;
 
@@ -393,7 +487,7 @@ option:checked {
 }
 
 .select__option--selected {
-  background: rgba(var(--primary-color), 0.25);
+  background: var(--primary-color-soft);
 }
 
 .select__option--highlight {
@@ -442,12 +536,12 @@ option:checked {
   }
 
   &:focus {
-    box-shadow: 0 0 3px 1px rgba(var(--primary-color), 90%);
+    box-shadow: 0 0 0 0.15rem var(--primary-color-shadow);
   }
 
   &.btn-success:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 3px 1px rgba(var(--primary-color), 90%);
+    box-shadow: 0 0 0 0.15rem var(--primary-color-shadow);
   }
 
   &.btn-primary {

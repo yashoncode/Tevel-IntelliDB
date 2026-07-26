@@ -206,6 +206,11 @@ if (!connectionsArr.value.length)
       &::-webkit-scrollbar {
          width: 3px;
       }
+
+      /* too narrow for the inset border the global thumb uses */
+      &::-webkit-scrollbar-thumb {
+         border: none;
+      }
    }
 
    .settingbar-bottom-elements {

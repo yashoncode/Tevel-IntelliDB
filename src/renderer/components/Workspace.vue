@@ -995,6 +995,12 @@ onMounted(() => {
         height: 2px;
       }
 
+      /* too narrow for the inset border the global thumb uses */
+      &::-webkit-scrollbar-thumb {
+        border: none;
+        min-height: 0;
+      }
+
       .tab-item {
         width: fit-content;
         flex: initial;

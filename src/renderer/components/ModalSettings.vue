@@ -283,38 +283,46 @@
                            <div class="column col-12 h6 text-uppercase mb-2">
                               {{ t('application.applicationTheme') }}
                            </div>
-                           <div
-                              class="column col-6 c-hand theme-block"
-                              :class="{'selected': applicationTheme === 'dark'}"
-                              @click="changeApplicationTheme('dark')"
-                           >
-                              <img :src="darkPreview" class="img-responsive img-fit-cover s-rounded">
-                              <div class="theme-name text-light">
-                                 <BaseIcon
-                                    icon-name="mdiMoonWaningCrescent"
-                                    class="mr-1"
-                                    :size="48"
+                           <div class="column col-12">
+                              <div
+                                 class="segmented"
+                                 role="radiogroup"
+                                 :aria-label="t('application.applicationTheme')"
+                              >
+                                 <span
+                                    class="segmented-thumb"
+                                    :style="{ transform: `translateX(${applicationTheme === 'light' ? 100 : 0}%)` }"
                                  />
-                                 <div class="h6 mt-4">
+                                 <button
+                                    class="segmented-option"
+                                    :class="{'active': applicationTheme === 'dark'}"
+                                    role="radio"
+                                    :aria-checked="applicationTheme === 'dark'"
+                                    type="button"
+                                    @click="changeApplicationTheme('dark')"
+                                 >
+                                    <BaseIcon
+                                       icon-name="mdiMoonWaningCrescent"
+                                       class="mr-1"
+                                       :size="18"
+                                    />
                                     {{ t('application.dark') }}
-                                 </div>
-                              </div>
-                           </div>
-                           <div
-                              class="column col-6 c-hand theme-block"
-                              :class="{'selected': applicationTheme === 'light'}"
-                              @click="changeApplicationTheme('light')"
-                           >
-                              <img :src="lightPreview" class="img-responsive img-fit-cover s-rounded">
-                              <div class="theme-name text-dark">
-                                 <BaseIcon
-                                    icon-name="mdiWhiteBalanceSunny"
-                                    class="mr-1"
-                                    :size="48"
-                                 />
-                                 <div class="h6 mt-4">
+                                 </button>
+                                 <button
+                                    class="segmented-option"
+                                    :class="{'active': applicationTheme === 'light'}"
+                                    role="radio"
+                                    :aria-checked="applicationTheme === 'light'"
+                                    type="button"
+                                    @click="changeApplicationTheme('light')"
+                                 >
+                                    <BaseIcon
+                                       icon-name="mdiWhiteBalanceSunny"
+                                       class="mr-1"
+                                       :size="18"
+                                    />
                                     {{ t('application.light') }}
-                                 </div>
+                                 </button>
                               </div>
                            </div>
                         </div>
@@ -520,8 +528,6 @@ const { getWorkspace } = workspacesStore;
 const appAuthor = 'Yashwanth';
 const pageSizes = [30, 40, 100, 250, 500, 1000];
 const appLogo = require('../images/logo.svg');
-const darkPreview = require('../images/dark.png');
-const lightPreview = require('../images/light.png');
 const exampleQuery = `-- This is an example
 SELECT
     employee.id,
@@ -681,12 +687,33 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #settings {
+  /* Fixed size: the panel used to grow/shrink per tab, so the whole dialog
+     jumped around. Now the shell is constant and only .panel-body scrolls. */
   .modal-container {
     position: absolute;
-    top: 17.5vh;
+    top: 12vh;
+    height: 76vh;
+    max-height: 76vh;
+    display: flex;
+    flex-direction: column;
 
     .modal-body {
       overflow: hidden;
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: none; /* spectre caps it at 50vh */
+      display: flex;
+
+      > .panel {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-nav {
+        flex: 0 0 auto;
+      }
 
       .tab-item {
          max-width: 20%;
@@ -699,34 +726,63 @@ onBeforeUnmount(() => {
       }
 
       .panel-body {
-        min-height: calc(25vh - 70px);
-        max-height: 65vh;
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
         overflow: auto;
 
-        .theme-block {
+        .segmented {
           position: relative;
-          text-align: center;
+          display: flex;
+          padding: 0.15rem;
+          border-radius: 1.2rem;
+          background: var(--segmented-bg);
 
-          &.selected {
-            img {
-              box-shadow: 0 0 0 3px var(--primary-color);
-            }
-          }
-
-          &.disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-          }
-
-          .theme-name {
+          .segmented-thumb {
             position: absolute;
+            top: 0.15rem;
+            left: 0.15rem;
+            height: calc(100% - 0.3rem);
+            width: calc(50% - 0.15rem);
+            border-radius: 1rem;
+            background: var(--segmented-thumb);
+            box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+          }
+
+          .segmented-option {
+            position: relative;
+            z-index: 1;
+            flex: 1 1 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            top: 0;
-            height: 100%;
-            width: 100%;
+            min-height: 1.8rem;
+            padding: 0.2rem 0.4rem;
+            border: none;
+            border-radius: 1rem;
+            background: transparent;
+            color: currentColor;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+
+            &:hover,
+            &.active {
+              opacity: 1;
+            }
+
+            &.active {
+              font-weight: 600;
+            }
+
+            &:focus-visible {
+              outline: 2px solid var(--primary-color);
+              outline-offset: -2px;
+            }
           }
         }
       }

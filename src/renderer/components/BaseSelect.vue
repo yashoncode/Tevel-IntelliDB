@@ -20,6 +20,7 @@
             type="text"
             autocomplete="off"
             spellcheck="false"
+            :placeholder="currentOptionLabel"
             :tabindex="tabindex"
             :value="searchText"
             @input="searchText = $event.target.value"
@@ -32,40 +33,45 @@
          >
          <span v-if="searchable && !isOpen || !searchable">{{ currentOptionLabel }}</span>
       </div>
-      <Transition :name="animation">
-         <div
-            v-if="isOpen"
-            ref="optionList"
-            :class="`select__list-wrapper ${dropdownClass ? dropdownClass : '' }`"
-            @mousedown="isMouseDown = true"
-            @mouseup="handleMouseUpEvent()"
-         >
-            <ul class="select__list" @mousedown.prevent>
-               <li
-                  v-for="(opt, index) of filteredOptions"
-                  :key="opt.id"
-                  :ref="(el) => optionRefs[index] = el"
-                  :class="{
-                     'select__item': true,
-                     'select__group': opt.$type === 'group',
-                     'select__option--highlight': opt.$type === 'option' && !opt.disabled && index === hightlightedIndex,
-                     'select__option--selected': opt.$type === 'option' && isSelected(opt),
-                     'select__option--disabled': opt.disabled
-                  }"
-                  @click.stop="select(opt)"
-                  @mousemove.self="hightlightedIndex = index"
-               >
-                  <slot
-                     name="option"
-                     :option="opt"
-                     :index="index"
+      <!-- Teleported out: the option list is position:fixed, and an ancestor with
+           backdrop-filter (.modal-container) becomes its containing block, which
+           offsets the whole list by the modal's top-left. -->
+      <Teleport to="#window-content">
+         <Transition :name="animation">
+            <div
+               v-if="isOpen"
+               ref="optionList"
+               :class="`select__list-wrapper ${dropdownClass ? dropdownClass : '' }`"
+               @mousedown="isMouseDown = true"
+               @mouseup="handleMouseUpEvent()"
+            >
+               <ul class="select__list" @mousedown.prevent>
+                  <li
+                     v-for="(opt, index) of filteredOptions"
+                     :key="opt.id"
+                     :ref="(el) => optionRefs[index] = el"
+                     :class="{
+                        'select__item': true,
+                        'select__group': opt.$type === 'group',
+                        'select__option--highlight': opt.$type === 'option' && !opt.disabled && index === hightlightedIndex,
+                        'select__option--selected': opt.$type === 'option' && isSelected(opt),
+                        'select__option--disabled': opt.disabled
+                     }"
+                     @click.stop="select(opt)"
+                     @mousemove.self="hightlightedIndex = index"
                   >
-                     {{ opt.label }}
-                  </slot>
-               </li>
-            </ul>
-         </div>
-      </Transition>
+                     <slot
+                        name="option"
+                        :option="opt"
+                        :index="index"
+                     >
+                        {{ opt.label }}
+                     </slot>
+                  </li>
+               </ul>
+            </div>
+         </Transition>
+      </Teleport>
    </div>
 </template>
 
@@ -432,6 +438,12 @@ export default defineComponent({
     color: currentColor;
     max-width: 100%;
     width: 100%;
+
+    /* keeps the selected value visible while typing a search */
+    &::placeholder {
+      color: currentColor;
+      opacity: 0.5;
+    }
   }
 
   &__item-text {

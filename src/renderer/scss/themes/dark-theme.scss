@@ -4,17 +4,7 @@
   color: $body-font-color-dark;
   background: $body-bg-dark;
 
-  ::-webkit-scrollbar-track {
-    background: $bg-color-light-dark;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba($color: #fff, $alpha: 50%);
-
-    &:hover {
-      background: rgba($color: #fff, $alpha: 100%);
-    }
-  }
+  /* Thumb color/track come from the shared rules in main.scss (--scrollbar-*). */
 
   :disabled {
     .file-uploader {
