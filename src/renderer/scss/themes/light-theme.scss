@@ -60,11 +60,22 @@
   --input-placeholder: #A3A1B5;
   --input-disabled: #F4F4FA;
 
-  /* Sidebar */
-  --sidebar-bg: #F4F4FA;
+  /* Connection rail — deliberately dark against the light app, so the app
+     chrome has an anchor and connection identity colors read clearly.
+     Separate from --sidebar-* , which the (light) database explorer uses. */
+  --rail-bg: #2F27CE;
+  --rail-text: #FFFFFF;
+  --rail-text-active: #FFFFFF;
+  --rail-item-hover: rgba(255, 255, 255, 0.1);
+  --rail-item-active: rgba(255, 255, 255, 0.18);
+  --rail-indicator: #FFFFFF;
+  --rail-border: transparent;
+
+  /* Sidebar (database explorer) */
+  --sidebar-bg: #FFFFFF;
   --sidebar-border: #E7E6F2;
   --sidebar-item: transparent;
-  --sidebar-item-hover: #ECEBF6;
+  --sidebar-item-hover: #F2F1F9;
   --sidebar-item-active: #DEDCFF;
   --sidebar-text: #454360;
   --sidebar-text-active: var(--primary);
@@ -153,12 +164,10 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* Wire the palette into the app-wide hooks. --primary-color drives every
-     accent (buttons, tabs, footer, focus rings) app-wide. */
-  --primary-color: var(--primary);
-  --primary-color-dark: var(--primary-hover);
-  --primary-color-shadow: var(--focus-ring);
-  --primary-color-soft: var(--primary-light);
+  /* --primary-color is deliberately NOT overridden here: TheFooter writes the
+     active connection's accent color onto :root, and a value set on this
+     element would shadow it for the whole subtree, killing color-coding. Its
+     default is the brand primary, so unstyled accents already match. */
 
   background: var(--bg);
   color: var(--text);
@@ -249,30 +258,56 @@
     }
   }
 
+  /* Minimal tabs: no boxes or outlines. A rounded tint fills the whole item on
+     hover, and the underline alone marks the active one. */
   .tab {
-    border-bottom: 0.05rem solid var(--border);
+    border-bottom: 1px solid var(--border);
 
     .tab-item {
-      a {
-        color: var(--text);
-        opacity: .7;
-  
-        &:hover {
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      transition: background 0.15s ease;
+
+      /* The anchor carries the padding, so it must fill the item for the
+         hover tint to cover the full target rather than just the label. */
+      a,
+      .tab-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.25rem 0.7rem;
+        border: 0;
+        border-radius: inherit;
+        color: var(--text-muted);
+        opacity: 1;
+        transition: color 0.15s ease;
+
+        &:hover,
+        &:focus {
           color: var(--text);
-          opacity: 1;
+          background: transparent;
+          box-shadow: none;
         }
       }
 
+      &:hover {
+        background: var(--surface-2);
+      }
+
       &.active {
-        a {
-          color: var(--sidebar-text-active);
-          opacity: 1;
-        }
-  
+        background: transparent;
+
+        a,
         .tab-link {
+          color: var(--primary);
+          font-weight: 600;
           border-color: transparent;
         }
-  
+
+        &:hover {
+          background: var(--surface-2);
+        }
+
         &::after {
           width: 100%;
         }
@@ -399,17 +434,24 @@
     }
   }
 
+  /* Chrome is white and separated by hairlines; color is reserved for state. */
   #titlebar {
-    background: var(--navbar-bg);
-    box-shadow: 0 1px 0 0 var(--navbar-border);
+    background: var(--rail-bg);
+    box-shadow: inset 0 -1px 0 0 var(--rail-border);
 
-    color: var(--text-secondary);
+    &,
+    .titlebar-title {
+      color: var(--rail-text);
+    }
 
     .titlebar-elements {
       .titlebar-element {
+        color: var(--rail-text);
+
         &:hover {
           opacity: 1;
-          background: var(--surface-3);
+          color: var(--rail-text-active);
+          background: var(--rail-item-hover);
         }
 
         &.close-button:hover {
@@ -420,9 +462,9 @@
   }
 
   #settingbar {
-    background: var(--sidebar-bg);
-    box-shadow: 1px 0 0 0 var(--sidebar-border);
-    color: var(--sidebar-text);
+    background: var(--rail-bg);
+    box-shadow: inset -1px 0 0 0 var(--rail-border);
+    color: var(--rail-text);
 
     .settingbar-top-elements {
       overflow: hidden overlay;
@@ -430,7 +472,7 @@
     }
 
     .settingbar-bottom-elements {
-      background: var(--sidebar-bg);
+      background: var(--rail-bg);
     }
 
     .settingbar-elements {
@@ -439,40 +481,42 @@
       padding: 0;
       margin: 0;
 
-      /* The component hardcodes a dark slab per item — reset it to the rail. */
+      /* Component hardcodes a #3f3f3f slab per item — let the rail show. */
       li {
         background: transparent;
       }
 
       .settingbar-element {
-        /* Icons ship with .text-light (white) for the dark rail. */
+        /* Component fades items to 0.6; 60% white on the blue is ~4.3:1. */
+        opacity: 0.85;
+        transition: opacity 0.2s, background 0.2s;
+
+        /* !important matches spectre's own: .text-light is `#fdfdfd !important`,
+           so nothing without it can win. */
         .settingbar-element-icon,
+        .settingbar-element-name,
         .text-light {
-          color: var(--sidebar-text);
+          color: var(--rail-text) !important;
+          transition: color 0.2s;
         }
 
-        &:hover .settingbar-element-icon,
-        &:hover .text-light {
-          color: var(--text);
+        &:hover {
+          opacity: 1;
+          background: var(--rail-item-hover);
         }
 
         &.selected {
-          background: var(--sidebar-item-active);
-
-          .settingbar-element-icon,
-          .text-light {
-            color: var(--sidebar-text-active);
-          }
+          opacity: 1;
+          background: var(--rail-item-active);
         }
 
-        /* Active-rail indicator was white-on-dark. */
         &::before {
-          background-color: var(--primary);
+          background-color: var(--rail-indicator);
         }
 
         .settingbar-element-icon {
           &.badge-update::after {
-            background: var(--primary-color);
+            background: var(--accent);
           }
         }
       }
@@ -496,7 +540,17 @@
     .workspace-explorebar {
       background: var(--sidebar-bg);
       box-shadow: 1px 0 0 0 var(--sidebar-border);
-      color: var(--sidebar-text);
+      color: #000;
+
+      /* Schema and table names read as black, not grey. The tree fades items
+         with opacity, which would grey them out again — so reset that too. */
+      .database-name,
+      .table-name,
+      .menu-item a,
+      .menu-item a > span {
+        color: #000;
+        opacity: 1;
+      }
 
       .workspace-explorebar-database {
         .database-name {
@@ -525,9 +579,11 @@
     }
 
     /* Tab strip sits one step below the content surface so the active tab reads
-       as raised into the page instead of floating on identical white. */
-    .workspace-tabs {
-      .tab-block {
+       as raised into the page instead of floating on identical white.
+       Direct-child scoped: panels nested inside .workspace-tabs have their own
+       .tab-block lists that must not inherit the raised-tab treatment. */
+    .workspace-tabs > .columns > .tab-block {
+      & {
         background-color: var(--surface-2);
         border-bottom: 1px solid var(--border);
 
@@ -619,7 +675,13 @@
 
   /* Was a #1d1d1d menu with white text dropped onto a light UI. */
   .context {
-    color: var(--text);
+    color: #000;
+
+    /* Menu icons carry .text-light (#fdfdfd !important) for the dark theme. */
+    .text-light,
+    svg {
+      color: #000 !important;
+    }
 
     .context-container {
       box-shadow: var(--shadow-md);
@@ -682,17 +744,25 @@
 
   /* A full-width saturated bar is the loudest element on a light screen for the
      least important content. Quiet surface, accent reserved for hover. */
+  /* Titlebar, connection rail and status bar are one continuous brand frame
+     around the light workspace. */
   #footer {
-    background: var(--surface-2);
-    color: var(--text-muted);
-    box-shadow: inset 0 1px 0 0 var(--border-light);
+    background: var(--rail-bg);
+    box-shadow: none;
+
+    &,
+    &.text-light,
+    &.text-dark {
+      color: var(--rail-text) !important;
+    }
 
     .footer-elements {
       .footer-element {
+        transition: background 0.2s;
+
         &.footer-link {
           &:hover {
-            color: var(--primary);
-            background: var(--surface-3);
+            background: var(--rail-item-hover);
           }
         }
       }

@@ -109,7 +109,7 @@ const workspace = computed(() => getWorkspace(workspaceUid.value));
 const accentColor = computed(() => {
    if (getConnectionFolder(workspaceUid.value)?.color)
       return getConnectionFolder(workspaceUid.value).color;
-   return '#1e40af';
+   return '#2f27ce'; // brand primary — must match --rail-bg or the frame splits
 });
 const connectionInfos = computed(() => getConnectionByUid(workspaceUid.value));
 const version: ComputedRef<DatabaseInfos> = computed(() => {

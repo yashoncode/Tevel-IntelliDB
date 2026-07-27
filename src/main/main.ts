@@ -24,6 +24,12 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 let mainWindow: BrowserWindow;
 let mainWindowState: windowStateKeeper.State;
 
+/* Native Windows caption buttons: drawn by the OS, so CSS can't reach them.
+   They have to be told the titlebar color the renderer is painting. */
+const titleBarOverlayFor = (theme: string) => theme === 'dark'
+   ? { color: '#3f3f3f', symbolColor: '#fff' }
+   : { color: '#2f27ce', symbolColor: '#fff' };
+
 async function createMainWindow () {
    const icon = require('../renderer/images/logo-64.png');
    const window = new BrowserWindow({
@@ -46,11 +52,7 @@ async function createMainWindow () {
       frame: !isLinux,
       titleBarStyle: 'hidden',
       titleBarOverlay: isWindows
-         ? {
-            color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
-            symbolColor: appTheme === 'dark' ? '#fff' : '#000',
-            height: 30
-         }
+         ? { ...titleBarOverlayFor(appTheme), height: 30 }
          : false,
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
@@ -88,12 +90,8 @@ ipcHandlers();
 
 ipcMain.on('refresh-theme-settings', () => {
    const appTheme = settingsStore.get('application_theme');
-   if (isWindows && mainWindow) {
-      mainWindow.setTitleBarOverlay({
-         color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
-         symbolColor: appTheme === 'dark' ? '#fff' : '#000'
-      });
-   }
+   if (isWindows && mainWindow)
+      mainWindow.setTitleBarOverlay(titleBarOverlayFor(appTheme));
 });
 
 ipcMain.on('change-window-title', (_, title: string) => {

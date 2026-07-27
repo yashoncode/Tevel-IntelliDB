@@ -3,6 +3,14 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
+      <div class="context-element" @click="openDataTab">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTabPlus"
+               :size="18"
+            /> {{ t('database.openInNewTab') }}</span>
+      </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table' && customizations.tableSettings"
          class="context-element"
@@ -221,6 +229,25 @@ const hideEmptyModal = () => {
 
 const closeContext = () => {
    emit('close-context');
+};
+
+/* Same permanent 'data' tab the tree opens on double-click — 'temp-data'
+   (single click) is the preview tab that the next selection replaces. */
+const openDataTab = () => {
+   newTab({
+      uid: selectedWorkspace.value,
+      elementName: props.selectedTable.name,
+      schema: props.selectedSchema,
+      type: 'data',
+      elementType: props.selectedTable.type
+   });
+
+   changeBreadcrumbs({
+      schema: props.selectedSchema,
+      [props.selectedTable.type]: props.selectedTable.name
+   });
+
+   closeContext();
 };
 
 const openTableSettingTab = () => {

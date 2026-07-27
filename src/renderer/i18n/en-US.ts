@@ -202,6 +202,7 @@ export const enUS = {
       checkClause: 'Check clause',
       addToIndex: 'Add to index',
       createNewTable: 'Create new table',
+      openInNewTab: 'Open in new tab',
       emptyTable: 'Empty table',
       duplicateTable: 'Duplicate table',
       deleteTable: 'Delete table',
