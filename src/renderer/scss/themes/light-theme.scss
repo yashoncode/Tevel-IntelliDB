@@ -4,133 +4,138 @@
      LIGHT THEME
      ========================================== */
 
+  /* Every value below is derived from five brand colors — text #050315,
+     background #fbfbfe, primary #2f27ce, secondary #dedcff, accent #433bff —
+     so neutrals carry the same indigo cast instead of reading as flat grey. */
+
   /* Base */
-  --bg: #F7F9FC;
+  --bg: #FBFBFE;
   --surface: #FFFFFF;
-  --surface-2: #F2F5F9;
-  --surface-3: #EEF2F7;
-  --overlay: rgba(17, 24, 39, 0.45);
+  --surface-2: #F4F4FA;
+  --surface-3: #ECEBF6;
+  --overlay: rgba(5, 3, 21, 0.42);
 
   /* Brand */
-  --primary: #2563EB;
-  --primary-hover: #1D4ED8;
-  --primary-active: #1E40AF;
-  --primary-light: #DBEAFE;
-  --accent: #0891B2;
-  --accent-hover: #0E7490;
-  --accent-light: #CFFAFE;
+  --primary: #2F27CE;
+  --primary-hover: #251FA4;
+  --primary-active: #1C177B;
+  --primary-light: #DEDCFF;
+  --accent: #433BFF;
+  --accent-hover: #2F27CE;
+  --accent-light: #ECEAFF;
 
   /* Status */
-  --success: #16A34A;
-  --success-bg: #DCFCE7;
-  --success-border: #86EFAC;
-  --warning: #D97706;
-  --warning-bg: #FEF3C7;
-  --warning-border: #FCD34D;
-  --error: #DC2626;
-  --error-bg: #FEE2E2;
-  --error-border: #FCA5A5;
-  --info: #0284C7;
-  --info-bg: #E0F2FE;
-  --info-border: #7DD3FC;
+  --success: #10814A;
+  --success-bg: #E3F7EC;
+  --success-border: #A7E3C4;
+  --warning: #A6620B;
+  --warning-bg: #FDF2DE;
+  --warning-border: #F1CB8A;
+  --error: #C42A2A;
+  --error-bg: #FCE9E9;
+  --error-border: #F0AFAF;
+  --info: var(--accent);
+  --info-bg: var(--accent-light);
+  --info-border: #BEB9FF;
 
-  /* Text */
-  --text: #111827;
-  --text-secondary: #4B5563;
-  --text-muted: #6B7280;
-  --text-disabled: #9CA3AF;
+  /* Text — secondary/muted are the ink tinted toward the background, so text
+     stays in one family. All pass 4.5:1 on --surface. */
+  --text: #050315;
+  --text-secondary: #454360;
+  --text-muted: #6E6C86;
+  --text-disabled: #A3A1B5;
   --text-inverse: #FFFFFF;
 
-  /* Borders */
-  --border: #D6DEE8;
-  --border-light: #E7EDF5;
-  --border-hover: #C8D2DE;
-  --divider: #E7EDF5;
+  /* Borders — hairlines only; hierarchy comes from surface steps, not rules. */
+  --border: #E4E3F0;
+  --border-light: #EEEDF7;
+  --border-hover: #CFCDE4;
+  --divider: #EEEDF7;
 
   /* Inputs */
   --input-bg: #FFFFFF;
-  --input-border: #CBD5E1;
-  --input-hover: #94A3B8;
-  --input-focus: #2563EB;
-  --input-placeholder: #9CA3AF;
-  --input-disabled: #F3F4F6;
+  --input-border: #DBDAEA;
+  --input-hover: #BAB8D2;
+  --input-focus: var(--primary);
+  --input-placeholder: #A3A1B5;
+  --input-disabled: #F4F4FA;
 
   /* Sidebar */
-  --sidebar-bg: #F2F5F9;
-  --sidebar-border: #E2E8F0;
+  --sidebar-bg: #F4F4FA;
+  --sidebar-border: #E7E6F2;
   --sidebar-item: transparent;
-  --sidebar-item-hover: #E8F1FD;
-  --sidebar-item-active: #DBEAFE;
-  --sidebar-text: #374151;
-  --sidebar-text-active: #2563EB;
+  --sidebar-item-hover: #ECEBF6;
+  --sidebar-item-active: #DEDCFF;
+  --sidebar-text: #454360;
+  --sidebar-text-active: var(--primary);
 
   /* Navbar */
   --navbar-bg: #FFFFFF;
-  --navbar-border: #E5E7EB;
-  --navbar-shadow: rgba(0, 0, 0, 0.03);
+  --navbar-border: #E7E6F2;
+  --navbar-shadow: rgba(5, 3, 21, 0.04);
 
   /* Tabs */
   --tab-bg: transparent;
-  --tab-hover: #EFF6FF;
-  --tab-active: #DBEAFE;
-  --tab-border: #2563EB;
+  --tab-hover: #F4F4FA;
+  --tab-active: #FFFFFF;
+  --tab-border: var(--primary);
 
   /* Table */
   --table-bg: #FFFFFF;
-  --table-header: #F8FAFC;
-  --table-header-text: #374151;
-  --table-row-hover: #F5F9FF;
-  --table-row-selected: #DBEAFE;
-  --table-border: #E5E7EB;
+  --table-header: #F4F4FA;
+  --table-header-text: #454360;
+  --table-row-hover: #F8F8FD;
+  --table-row-selected: #DEDCFF;
+  --table-border: #EDECF6;
 
   /* Buttons */
-  --btn-primary-bg: #2563EB;
-  --btn-primary-hover: #1D4ED8;
+  --btn-primary-bg: var(--primary);
+  --btn-primary-hover: var(--primary-hover);
   --btn-primary-text: #FFFFFF;
   --btn-secondary-bg: #FFFFFF;
-  --btn-secondary-hover: #F8FAFC;
-  --btn-secondary-border: #CBD5E1;
-  --btn-secondary-text: #374151;
+  --btn-secondary-hover: #F4F4FA;
+  --btn-secondary-border: #DBDAEA;
+  --btn-secondary-text: #454360;
   --btn-ghost-bg: transparent;
-  --btn-ghost-hover: #EFF6FF;
-  --btn-ghost-text: #2563EB;
+  --btn-ghost-hover: #ECEAFF;
+  --btn-ghost-text: var(--primary);
 
   /* Cards */
   --card-bg: #FFFFFF;
-  --card-border: #E7EDF5;
-  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --card-border: #EEEDF7;
+  --card-shadow: 0 1px 2px rgba(5, 3, 21, 0.04), 0 4px 12px rgba(5, 3, 21, 0.04);
 
   /* Dropdown */
   --dropdown-bg: #FFFFFF;
-  --dropdown-border: #E5E7EB;
-  --dropdown-hover: #F8FAFC;
+  --dropdown-border: #E7E6F2;
+  --dropdown-hover: #F4F4FA;
 
   /* Scrollbar */
-  --scrollbar: #CBD5E1;
-  --scrollbar-hover: #94A3B8;
+  --scrollbar: #D4D3E5;
+  --scrollbar-hover: #B4B2CE;
 
   /* Code Editor */
   --editor-bg: #FFFFFF;
-  --editor-gutter: #F8FAFC;
-  --editor-selection: #DBEAFE;
-  --editor-current-line: #F3F7FC;
+  --editor-gutter: #F4F4FA;
+  --editor-selection: #DEDCFF;
+  --editor-current-line: #F7F7FD;
 
   /* Charts */
-  --chart-blue: #2563EB;
-  --chart-cyan: #0891B2;
-  --chart-green: #16A34A;
-  --chart-orange: #D97706;
-  --chart-red: #DC2626;
+  --chart-blue: #2F27CE;
+  --chart-cyan: #433BFF;
+  --chart-green: #10814A;
+  --chart-orange: #A6620B;
+  --chart-red: #C42A2A;
   --chart-purple: #7C3AED;
 
   /* Focus */
-  --focus-ring: rgba(37, 99, 235, 0.25);
+  --focus-ring: rgba(67, 59, 255, 0.22);
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.10);
+  /* Shadows — tinted with the ink, never neutral black. */
+  --shadow-xs: 0 1px 2px rgba(5, 3, 21, 0.05);
+  --shadow-sm: 0 2px 6px rgba(5, 3, 21, 0.06);
+  --shadow-md: 0 6px 20px rgba(5, 3, 21, 0.08);
+  --shadow-lg: 0 16px 40px rgba(5, 3, 21, 0.12);
 
   /* Radius */
   --radius-xs: 4px;
@@ -171,7 +176,7 @@
   --type-unknown: var(--text-muted);
   --scrollbar-thumb: var(--scrollbar);
   --scrollbar-thumb-hover: var(--scrollbar-hover);
-  --switch-track: #CBD5E1;
+  --switch-track: #CFCDE4;
   --segmented-bg: var(--surface-3);
   --segmented-thumb: var(--surface);
 
@@ -398,11 +403,13 @@
     background: var(--navbar-bg);
     box-shadow: 0 1px 0 0 var(--navbar-border);
 
+    color: var(--text-secondary);
+
     .titlebar-elements {
       .titlebar-element {
         &:hover {
           opacity: 1;
-          background: rgba($color: rgb(172 172 172), $alpha: 30%);
+          background: var(--surface-3);
         }
 
         &.close-button:hover {
@@ -432,7 +439,37 @@
       padding: 0;
       margin: 0;
 
+      /* The component hardcodes a dark slab per item — reset it to the rail. */
+      li {
+        background: transparent;
+      }
+
       .settingbar-element {
+        /* Icons ship with .text-light (white) for the dark rail. */
+        .settingbar-element-icon,
+        .text-light {
+          color: var(--sidebar-text);
+        }
+
+        &:hover .settingbar-element-icon,
+        &:hover .text-light {
+          color: var(--text);
+        }
+
+        &.selected {
+          background: var(--sidebar-item-active);
+
+          .settingbar-element-icon,
+          .text-light {
+            color: var(--sidebar-text-active);
+          }
+        }
+
+        /* Active-rail indicator was white-on-dark. */
+        &::before {
+          background-color: var(--primary);
+        }
+
         .settingbar-element-icon {
           &.badge-update::after {
             background: var(--primary-color);
@@ -444,8 +481,9 @@
 
   .ex-tooltip {
     .ex-tooltip-content {
-      background: rgb(48 55 66 / 95%);
-      color: #fff;
+      background: var(--text);
+      color: var(--text-inverse);
+      box-shadow: var(--shadow-md);
     }
   }
 
@@ -486,22 +524,31 @@
       }
     }
 
+    /* Tab strip sits one step below the content surface so the active tab reads
+       as raised into the page instead of floating on identical white. */
     .workspace-tabs {
       .tab-block {
+        background-color: var(--surface-2);
+        border-bottom: 1px solid var(--border);
+
         .tab-item {
+          border-radius: 6px 6px 0 0;
+
           > a {
             color: var(--text-secondary);
           }
 
-          &:hover {
-            background-color: var(--tab-hover);
+          &:hover:not(.active) {
+            background-color: var(--surface-3);
           }
 
-          &.selected {
+          &.active {
             background-color: var(--tab-active);
+            box-shadow: inset 0 1px 0 0 var(--border), inset 1px 0 0 0 var(--border), inset -1px 0 0 0 var(--border);
 
             > a {
-              color: var(--sidebar-text-active);
+              color: var(--text);
+              font-weight: 500;
             }
           }
 
@@ -633,15 +680,19 @@
     }
   }
 
+  /* A full-width saturated bar is the loudest element on a light screen for the
+     least important content. Quiet surface, accent reserved for hover. */
   #footer {
-    background: var(--primary-color);
-    box-shadow: 0 -1px 0 0 var(--navbar-border);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    box-shadow: inset 0 1px 0 0 var(--border-light);
 
     .footer-elements {
       .footer-element {
         &.footer-link {
           &:hover {
-            background: rgba($color: #fff, $alpha: 10%);
+            color: var(--primary);
+            background: var(--surface-3);
           }
         }
       }
