@@ -26,7 +26,7 @@ let mainWindowState: windowStateKeeper.State;
 
 /* Native Windows caption buttons: drawn by the OS, so CSS can't reach them.
    They have to be told the titlebar color the renderer is painting. */
-const titleBarOverlayFor = (theme: string) => theme === 'dark'
+const titleBarOverlayFor = (theme: unknown) => theme === 'dark'
    ? { color: '#3f3f3f', symbolColor: '#fff' }
    : { color: '#2f27ce', symbolColor: '#fff' };
 
